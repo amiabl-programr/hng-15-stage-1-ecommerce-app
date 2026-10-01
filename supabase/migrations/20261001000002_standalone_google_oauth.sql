@@ -17,7 +17,7 @@ ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS avatar_url TEXT;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_profiles_email_lower ON public.profiles(lower(email));
 CREATE UNIQUE INDEX IF NOT EXISTS idx_profiles_google_id ON public.profiles(google_id) WHERE google_id IS NOT NULL;
 
--- 5. Add RLS policy for service operations or public reads if needed
+-- 5. RLS policies supporting both Secret Key (bypasses RLS) and Publishable/Anon Key
 DO $$ BEGIN
     IF NOT EXISTS (
         SELECT 1 FROM pg_policies 
@@ -25,5 +25,21 @@ DO $$ BEGIN
     ) THEN
         CREATE POLICY "Public read for basic profiles" ON public.profiles
             FOR SELECT USING (true);
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'profiles' AND policyname = 'Public insert for Google OAuth profiles'
+    ) THEN
+        CREATE POLICY "Public insert for Google OAuth profiles" ON public.profiles
+            FOR INSERT WITH CHECK (true);
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'profiles' AND policyname = 'Public update for Google OAuth profiles'
+    ) THEN
+        CREATE POLICY "Public update for Google OAuth profiles" ON public.profiles
+            FOR UPDATE USING (true) WITH CHECK (true);
     END IF;
 END $$;

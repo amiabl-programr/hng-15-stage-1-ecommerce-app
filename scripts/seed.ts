@@ -7,12 +7,17 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const serviceRoleKey =
+  process.env.SUPABASE_SECRET_KEY ||
+  (process.env.SUPABASE_SERVICE_ROLE_KEY && !process.env.SUPABASE_SERVICE_ROLE_KEY.includes("placeholder")
+    ? process.env.SUPABASE_SERVICE_ROLE_KEY
+    : null) ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !serviceRoleKey || supabaseUrl.includes("placeholder") || serviceRoleKey.includes("placeholder")) {
+if (!supabaseUrl || !serviceRoleKey || supabaseUrl.includes("placeholder")) {
   console.error("==================================================================");
   console.error("❌ Cannot connect to Supabase:");
-  console.error("Please add your real NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env");
+  console.error("Please add your real NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SECRET_KEY or SUPABASE_SERVICE_ROLE_KEY in .env");
   console.error("==================================================================");
   process.exit(1);
 }
@@ -328,7 +333,7 @@ const SEED_PRODUCTS: SeedProduct[] = [
   },
 ];
 
-async function seed() {
+export async function seed() {
   console.log("🚀 Starting Type-Safe Supabase Seeder...");
 
   // 1. Seed Categories
@@ -463,7 +468,9 @@ async function seed() {
   console.log("==================================================================");
 }
 
-seed().catch((err) => {
-  console.error("Unhandled seeding error:", err);
-  process.exit(1);
-});
+if (process.argv[1]?.replace(/\\/g, "/").endsWith("seed.ts")) {
+  seed().catch((err) => {
+    console.error("Unhandled seeding error:", err);
+    process.exit(1);
+  });
+}

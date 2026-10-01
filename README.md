@@ -177,6 +177,18 @@ You can seed realistic roofing materials (Longspan aluminium, Metcopo, Step tile
   pnpm db:seed
   ```
 
+### Reset & Re-seed Database
+
+To wipe out test orders, inventory adjustments, and draft items, and restore a pristine seed catalogue:
+
+* **Option A (CLI / Programmatic)**:
+  ```bash
+  pnpm db:reset
+  ```
+  * Safely purges `order_items`, `orders`, `fabrication_requests`, `inventory`, `product_variants`, `product_images`, `products`, and `categories`, then runs the seeder automatically.
+* **Option B (SQL Editor)**:
+  * Open `supabase/reset.sql`, paste into your Supabase SQL Editor, and click **Run**.
+
 ---
 
 ## 🔑 Authentication & Google Cloud Setup
