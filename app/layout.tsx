@@ -31,6 +31,14 @@ export const metadata: Metadata = {
     "valley trimmers",
   ],
   authors: [{ name: "Roofing Construction Shop" }],
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    apple: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+  },
 };
 
 export default function RootLayout({

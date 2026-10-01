@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="roofixGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#1d4ed8" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Rounded Base Container -->
+  <rect width="32" height="32" rx="7" fill="url(#roofixGrad)" />
+  
+  <!-- Architectural Roof Crest / Chevron -->
+  <!-- Main Outer Pitch -->
+  <path 
+    d="M16 6 L5 16.5 L7.5 19 L16 11 L24.5 19 L27 16.5 Z" 
+    fill="#ffffff" 
+  />
+  
+  <!-- Inner Apex Chevron / Beam -->
+  <path 
+    d="M16 13 L9.5 19.5 L11 21 L16 16 L21 21 L22.5 19.5 Z" 
+    fill="#93c5fd" 
+  />
+
+  <!-- Horizontal Tie Beam / Structural Base -->
+  <rect x="8" y="22.5" width="16" height="2.5" rx="1" fill="#ffffff" />
+</svg>
