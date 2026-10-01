@@ -105,7 +105,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     product_type: "dimensioned",
     base_price: 3800.0,
     unit: "metre",
-    min_order_quantity: 10,
+    min_order_quantity: 1,
     is_active: true,
     is_featured: true,
     specifications: {
@@ -178,7 +178,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     product_type: "dimensioned",
     base_price: 4200.0,
     unit: "metre",
-    min_order_quantity: 10,
+    min_order_quantity: 1,
     is_active: true,
     is_featured: true,
     specifications: {
@@ -239,7 +239,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     product_type: "standard",
     base_price: 5400.0,
     unit: "piece",
-    min_order_quantity: 50,
+    min_order_quantity: 1,
     is_active: true,
     is_featured: true,
     specifications: {

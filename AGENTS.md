@@ -250,26 +250,20 @@ Administrative access must be explicitly authorized.
 
 # 12. Authentication
 
-Use:
-
-```text
-Supabase Auth
-+
-Google OAuth
-```
-
-Do not implement custom authentication unless explicitly requested.
-
-The authentication flow is:
+Direct Google OAuth 2.0 (user-selected preference over Supabase Auth):
 
 ```text
 User
  ↓
-Google
+Google OAuth 2.0 Consent
  ↓
-Supabase Auth
+Next.js Callback Route (/api/auth/callback/google & /callback)
  ↓
-Next.js session
+Exchange Code & Fetch Userinfo (Google API)
+ ↓
+Persist / Update User in Database (public.profiles)
+ ↓
+Signed HTTP-Only Session Cookie
 ```
 
 Authentication credentials must never be committed to the repository.

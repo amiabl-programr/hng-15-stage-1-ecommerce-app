@@ -131,9 +131,17 @@ NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-public-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-secret-key
 
-# Google OAuth Credentials (configured in Supabase Auth & Google Cloud Console)
+# Direct Google OAuth 2.0 Credentials (Google Cloud Console)
+# In Google Cloud Console -> APIs & Services -> Credentials -> OAuth 2.0 Client IDs
+# Authorized JavaScript origins: http://localhost:3000
+# Authorized redirect URIs:
+#   http://localhost:3000/api/auth/callback/google
+#   http://localhost:3000/callback
 GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# Application Session Secret (Optional - defaults to GOOGLE_CLIENT_SECRET)
+SESSION_SECRET=your-random-32-byte-hex-or-phrase
 
 # Designate Administrator Email(s)
 # Users signing in with these emails will be automatically elevated to 'admin'
