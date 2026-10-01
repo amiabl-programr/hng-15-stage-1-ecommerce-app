@@ -1,4 +1,7 @@
-import { createClient } from "@/lib/supabase/client";
+/**
+ * Product & Category image uploader
+ * Dispatches file to authenticated server endpoint /api/admin/upload
+ */
 
 export async function uploadProductImage(file: File): Promise<{ success: boolean; url?: string; error?: string }> {
   // 1. Validate format
@@ -13,26 +16,21 @@ export async function uploadProductImage(file: File): Promise<{ success: boolean
   }
 
   try {
-    const supabase = createClient();
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
-    const filePath = `products/${fileName}`;
+    const formData = new FormData();
+    formData.append("file", file);
 
-    const { error: uploadError } = await supabase.storage
-      .from("products")
-      .upload(filePath, file, {
-        cacheControl: "3600",
-        upsert: false,
-      });
+    const response = await fetch("/api/admin/upload", {
+      method: "POST",
+      body: formData,
+    });
 
-    if (uploadError) {
-      console.error("[Storage Upload Error]:", uploadError);
-      return { success: false, error: uploadError.message };
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      return { success: false, error: data.error || "Failed to upload image." };
     }
 
-    const { data } = supabase.storage.from("products").getPublicUrl(filePath);
-
-    return { success: true, url: data.publicUrl };
+    return { success: true, url: data.url };
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "Failed to upload image";
     return { success: false, error: msg };

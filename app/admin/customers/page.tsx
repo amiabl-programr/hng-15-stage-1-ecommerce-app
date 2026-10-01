@@ -56,9 +56,18 @@ export default async function AdminCustomersPage() {
                   <tr key={p.id} className="hover:bg-slate-850/50 transition-colors">
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-amber-400 font-bold">
-                          {p.full_name ? p.full_name[0].toUpperCase() : "U"}
-                        </div>
+                        {p.avatar_url ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={p.avatar_url}
+                            alt={p.full_name || "Customer"}
+                            className="w-8 h-8 rounded-full object-cover border border-slate-700"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-amber-400 font-bold border border-slate-700">
+                            {p.full_name ? p.full_name[0].toUpperCase() : "U"}
+                          </div>
+                        )}
                         <span className="font-bold text-white text-sm">
                           {p.full_name || "Anonymous User"}
                         </span>
