@@ -1,4 +1,5 @@
-import { createClient } from "@/lib/supabase/server";
+import { getSession, getCurrentUserProfile } from "@/lib/auth/session";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
@@ -9,33 +10,30 @@ export const metadata = {
 };
 
 export default async function AccountOverviewPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const session = await getSession();
 
-  if (!user) {
+  if (!session) {
     redirect("/login?redirect=/account");
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
+  const profile = await getCurrentUserProfile();
+  const adminDb = createAdminClient();
 
-  const { data: recentOrders } = await supabase
+  const { data: recentOrders } = await adminDb
     .from("orders")
     .select("*")
-    .eq("profile_id", user.id)
+    .eq("profile_id", session.id)
     .order("created_at", { ascending: false })
     .limit(3);
+
+  const userEmail = profile?.email || session.email;
+  const userName = profile?.full_name || session.name || userEmail.split("@")[0];
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl sm:text-3xl font-black text-white">
-          Welcome, {profile?.full_name || user.email?.split("@")[0]}
+          Welcome, {userName}
         </h1>
         <p className="text-sm text-slate-400 mt-1">
           Manage your account contact information, site delivery records, and active roofing orders.
@@ -50,9 +48,9 @@ export default async function AccountOverviewPage() {
             <Shield className="w-4 h-4 text-amber-500" />
           </div>
           <span className="text-xl font-bold text-white capitalize block">
-            {profile?.role || "Customer"}
+            {profile?.role || session.role || "Customer"}
           </span>
-          <span className="text-xs text-slate-500 block">{user.email}</span>
+          <span className="text-xs text-slate-500 block">{userEmail}</span>
         </div>
 
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-2">

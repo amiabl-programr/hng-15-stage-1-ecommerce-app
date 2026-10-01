@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, Suspense } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { ShieldCheck, ArrowRight, HardHat, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -13,24 +12,12 @@ function LoginFormContent() {
   const redirectPath = searchParams.get("redirect") || "/account";
   const authError = searchParams.get("error");
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = () => {
     try {
       setLoading(true);
       setErrorMessage(null);
-      const supabase = createClient();
-      const origin = window.location.origin;
-
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${origin}/callback?next=${encodeURIComponent(redirectPath)}`,
-        },
-      });
-
-      if (error) {
-        setErrorMessage(error.message);
-        setLoading(false);
-      }
+      // Direct browser to standalone Google OAuth initiation route
+      window.location.href = `/api/auth/google?next=${encodeURIComponent(redirectPath)}`;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to initiate Google sign in";
       setErrorMessage(msg);
@@ -43,7 +30,11 @@ function LoginFormContent() {
       {authError && (
         <div className="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/30 flex items-start gap-3 text-red-400 text-sm">
           <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-          <span>Authentication failed. Please verify your Google credentials or try again.</span>
+          <span>
+            {authError === "AuthenticationFailed"
+              ? "Authentication failed. Please verify your Google credentials or try again."
+              : `Authentication error: ${authError}`}
+          </span>
         </div>
       )}
 

@@ -23,6 +23,8 @@ export interface Profile {
   full_name: string | null;
   email: string;
   phone: string | null;
+  avatar_url?: string | null;
+  google_id?: string | null;
   created_at: string;
   updated_at: string;
 }

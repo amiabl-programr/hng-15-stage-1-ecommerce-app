@@ -1,4 +1,5 @@
-import { createClient } from "@/lib/supabase/server";
+import { getSession } from "@/lib/auth/session";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
@@ -9,22 +10,20 @@ export const metadata = {
 };
 
 export default async function AccountOrdersPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const session = await getSession();
 
-  if (!user) {
+  if (!session) {
     redirect("/login?redirect=/account/orders");
   }
 
-  const { data: orders } = await supabase
+  const adminDb = createAdminClient();
+  const { data: orders } = await adminDb
     .from("orders")
     .select(`
       *,
       order_items(count)
     `)
-    .eq("profile_id", user.id)
+    .eq("profile_id", session.id)
     .order("created_at", { ascending: false });
 
   return (

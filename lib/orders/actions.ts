@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { getSession } from "@/lib/auth/session";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createOrderSchema, CreateOrderPayload } from "@/lib/validation/checkout";
 import { generateOrderNumber } from "@/lib/utils";
@@ -25,11 +25,8 @@ export async function createOrderAction(rawPayload: CreateOrderPayload): Promise
   const { customer, items } = parseResult.data;
 
   try {
-    // 2. Obtain Supabase server client & session
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    // 2. Obtain session user if logged in
+    const session = await getSession();
 
     // Use admin client for database validation & transaction writes
     const adminDb = createAdminClient();
@@ -156,7 +153,7 @@ export async function createOrderAction(rawPayload: CreateOrderPayload): Promise
       .from("orders")
       .insert({
         order_number: orderNumber,
-        profile_id: user?.id || null,
+        profile_id: session?.id || null,
         status: "pending",
         payment_status: customer.paymentMethod === "pay_on_delivery" ? "pending" : "payment_pending",
         payment_method: customer.paymentMethod,

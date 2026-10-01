@@ -7,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { checkoutCustomerSchema, CheckoutCustomerFormData } from "@/lib/validation/checkout";
 import { createOrderAction } from "@/lib/orders/actions";
 import { useCartStore } from "@/lib/cart/store";
-import { createClient } from "@/lib/supabase/client";
 import { formatCurrency } from "@/lib/utils";
 import {
   ShieldCheck,
@@ -46,22 +45,13 @@ export function CheckoutForm() {
   useEffect(() => {
     async function checkUser() {
       try {
-        const supabase = createClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-
-        if (user) {
-          setIsAuthenticated(true);
-          if (user.email) setValue("email", user.email);
-
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("id", user.id)
-            .single();
-
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+          const profile = data?.user;
           if (profile) {
+            setIsAuthenticated(true);
+            if (profile.email) setValue("email", profile.email);
             if (profile.full_name) setValue("fullName", profile.full_name);
             if (profile.phone) setValue("phone", profile.phone);
           }

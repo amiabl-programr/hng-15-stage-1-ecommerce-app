@@ -1,39 +1,33 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { getSession, getCurrentUserProfile } from "@/lib/auth/session";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { OrderStatus, PaymentStatus } from "@/types/database";
 import { revalidatePath } from "next/cache";
 
 // Verification helper ensuring requesting user has admin role
 async function verifyAdmin() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const session = await getSession();
 
-  if (!user) {
+  if (!session) {
     throw new Error("Unauthorized: Please sign in.");
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
+  const adminEmails = (process.env.ADMIN_EMAILS || "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase());
+  const isEnvAdmin = session.email && adminEmails.includes(session.email.toLowerCase());
 
-  if (!profile || profile.role !== "admin") {
-    // Check if user's email is in ADMIN_EMAILS fallback
-    const adminEmails = (process.env.ADMIN_EMAILS || "")
-      .split(",")
-      .map((e) => e.trim().toLowerCase());
-    if (user.email && adminEmails.includes(user.email.toLowerCase())) {
-      return user;
-    }
-    throw new Error("Forbidden: Administrator privileges required.");
+  if (session.role === "admin" || isEnvAdmin) {
+    return session;
   }
 
-  return user;
+  const profile = await getCurrentUserProfile();
+  if (profile?.role === "admin") {
+    return session;
+  }
+
+  throw new Error("Forbidden: Administrator privileges required.");
 }
 
 export async function updateOrderStatusAction(

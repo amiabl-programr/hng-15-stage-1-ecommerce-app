@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { getSession } from "@/lib/auth/session";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { fabricationRequestSchema, FabricationRequestFormData } from "@/lib/validation/checkout";
 
@@ -16,17 +16,14 @@ export async function submitFabricationRequestAction(rawPayload: FabricationRequ
   const data = parseResult.data;
 
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const session = await getSession();
 
     const adminDb = createAdminClient();
 
     const { data: requestRecord, error } = await adminDb
       .from("fabrication_requests")
       .insert({
-        profile_id: user?.id || null,
+        profile_id: session?.id || null,
         service_type: data.serviceType,
         contact_name: data.contactName,
         contact_email: data.contactEmail,

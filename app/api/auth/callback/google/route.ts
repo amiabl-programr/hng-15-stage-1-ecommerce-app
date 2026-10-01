@@ -4,18 +4,14 @@ import { exchangeCodeForTokens, getGoogleUserInfo } from "@/lib/auth/google";
 import { syncGoogleUserToDatabase } from "@/lib/auth/user-sync";
 import { setSessionCookie } from "@/lib/auth/session";
 
-/**
- * Fallback callback route in case Google Cloud Console is configured with /callback
- */
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const state = searchParams.get("state");
   const error = searchParams.get("error");
-  const next = searchParams.get("next") ?? "/account";
 
   if (error) {
-    console.error("[Auth Callback] Error returned from provider:", error);
+    console.error("[Google OAuth Callback] Error returned from Google:", error);
     return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(error)}`);
   }
 
@@ -23,7 +19,8 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}/login?error=MissingAuthorizationCode`);
   }
 
-  let nextPath = next;
+  // Parse state & verify CSRF
+  let nextPath = "/account";
   const cookieStore = await cookies();
   const savedState = cookieStore.get("oauth_state")?.value;
 
@@ -31,22 +28,23 @@ export async function GET(request: Request) {
     try {
       const decodedState = JSON.parse(Buffer.from(state, "base64url").toString("utf-8"));
       if (savedState && decodedState.state !== savedState) {
-        console.warn("[Auth Callback] CSRF state mismatch detected.");
+        console.warn("[Google OAuth Callback] CSRF state mismatch detected.");
       }
       if (decodedState.next && typeof decodedState.next === "string") {
         nextPath = decodedState.next;
       }
-    } catch {
-      // Direct state string
+    } catch (e) {
+      console.warn("[Google OAuth Callback] Failed decoding state payload:", e);
     }
   }
 
+  // Clear CSRF cookie
   cookieStore.set("oauth_state", "", { maxAge: 0, path: "/" });
 
   try {
-    const redirectUri = `${origin}/callback`;
+    const redirectUri = `${origin}/api/auth/callback/google`;
 
-    // 1. Exchange authorization code for tokens directly with Google
+    // 1. Exchange authorization code for tokens
     const tokens = await exchangeCodeForTokens({
       code,
       redirectUri,
@@ -55,20 +53,27 @@ export async function GET(request: Request) {
     // 2. Fetch authenticated user details from Google
     const googleUser = await getGoogleUserInfo(tokens.access_token);
 
-    // 3. Persist user details into database
+    // 3. Persist user details into Supabase PostgreSQL (public.profiles)
     const profile = await syncGoogleUserToDatabase(googleUser);
 
     // 4. Create and establish secure session cookie
     await setSessionCookie(profile);
 
+    // If user is admin and was heading to default account, send to admin portal
     if (profile.role === "admin" && nextPath === "/account") {
       nextPath = "/admin";
     }
 
+    console.log(
+      `[Google OAuth] Authenticated ${profile.email} (${profile.role}). Redirecting to ${nextPath}`
+    );
+
     return NextResponse.redirect(`${origin}${nextPath}`);
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "AuthenticationFailed";
-    console.error("[Auth Callback] Google authentication error:", err);
-    return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(msg)}`);
+    const errorMessage = err instanceof Error ? err.message : "AuthenticationFailed";
+    console.error("[Google OAuth Callback] Authentication error:", err);
+    return NextResponse.redirect(
+      `${origin}/login?error=${encodeURIComponent(errorMessage)}`
+    );
   }
 }

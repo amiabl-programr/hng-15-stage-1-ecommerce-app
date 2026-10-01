@@ -1,4 +1,5 @@
-import { createClient } from "@/lib/supabase/server";
+import { getSession } from "@/lib/auth/session";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
@@ -32,17 +33,14 @@ const ORDER_STEPS: Array<{ key: OrderStatus; label: string }> = [
 
 export default async function OrderDetailPage({ params }: OrderDetailPageProps) {
   const { id } = await params;
-  const supabase = await createClient();
+  const session = await getSession();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
+  if (!session) {
     redirect(`/login?redirect=/account/orders/${id}`);
   }
 
-  const { data: order, error } = await supabase
+  const adminDb = createAdminClient();
+  const { data: order, error } = await adminDb
     .from("orders")
     .select(`
       *,
@@ -56,13 +54,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   }
 
   // Ensure customer can only view their own order unless they are an admin
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (order.profile_id && order.profile_id !== user.id && profile?.role !== "admin") {
+  if (order.profile_id && order.profile_id !== session.id && session.role !== "admin") {
     redirect("/account/orders");
   }
 
