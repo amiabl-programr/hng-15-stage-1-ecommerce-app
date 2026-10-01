@@ -29,7 +29,7 @@ VALUES
         'premium-longspan-aluminium-roofing-sheet',
         'Industrial-grade continuous longspan aluminium sheet engineered to withstand intense tropical sun and heavy coastal rain. Can be formed to any length without overlapping joints.',
         'High durability longspan aluminium sheet available in custom lengths and gauges.',
-        'dimensioned', 3800.00, 'metre', 10, true, true,
+        'dimensioned', 3800.00, 'metre', 1, true, true,
         '{"material": "Aluminium Alloy 3003", "effective_width": "900mm", "warranty": "25 Years", "heat_reflection": "85%"}'::jsonb
     ),
     (
@@ -38,7 +38,7 @@ VALUES
         'metcopo-steptile-profile-sheet',
         'Metcopo profile combines the classic architectural elegance of clay roofing tiles with the ultra-lightweight strength of zinc-coated steel.',
         'Classical architectural clay tile aesthetic with modern steel resilience.',
-        'dimensioned', 4200.00, 'metre', 10, true, true,
+        'dimensioned', 4200.00, 'metre', 1, true, true,
         '{"material": "Aluzinc Steel", "effective_width": "1000mm", "step_height": "28mm", "warranty": "30 Years"}'::jsonb
     ),
     (
@@ -47,7 +47,7 @@ VALUES
         'stone-coated-shake-shingle-tile',
         'Stone-coated roofing tiles made from galvanized zinc-alloy steel covered with natural volcanic basalt stone granules. Fireproof, sound-dampening, and highly luxurious.',
         'Granule-coated volcanic stone shingle tile with superior sound and heat insulation.',
-        'standard', 5400.00, 'piece', 50, true, true,
+        'standard', 5400.00, 'piece', 1, true, true,
         '{"material": "Galvalume Steel + Basalt Granules", "length": "1340mm", "width": "420mm", "coverage": "0.48 sqm/piece", "warranty": "50 Years"}'::jsonb
     ),
     (
@@ -56,7 +56,7 @@ VALUES
         'heavy-gauge-ridged-apex-cap',
         'V-profile and rounded barrel ridge caps designed to seal the upper roof apex against storm-driven rain and wind gusts. Pre-notched for easy fastening.',
         'Heavy gauge apex capping for complete waterproof ridge sealing.',
-        'standard', 2800.00, 'piece', 5, true, false,
+        'standard', 2800.00, 'piece', 1, true, false,
         '{"material": "Aluminium / Aluzinc", "length": "2000mm", "girth": "450mm"}'::jsonb
     ),
     (
@@ -74,7 +74,7 @@ VALUES
         'custom-cnc-sheet-bending-service',
         'High precision CNC brake press service for custom trimming, fascia bending, circular barrel vaults, and intricate canopy angles.',
         'Bespoke architectural sheet folding and radius arch curving.',
-        'service', 850.00, 'metre', 5, true, true,
+        'service', 850.00, 'metre', 1, true, true,
         '{"max_thickness": "1.2mm", "bending_accuracy": "+/- 0.5 degrees", "turnaround": "24-48 Hours"}'::jsonb
     ),
     (

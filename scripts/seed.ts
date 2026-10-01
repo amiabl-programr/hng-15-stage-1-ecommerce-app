@@ -145,7 +145,7 @@ const SEED_PRODUCTS: SeedProduct[] = [
     product_type: "dimensioned",
     base_price: 3800.0,
     unit: "metre",
-    min_order_quantity: 10,
+    min_order_quantity: 1,
     is_featured: true,
     imageUrl: "https://images.unsplash.com/photo-1620027814885-f55a1cb8b776?auto=format&fit=crop&w=1200&q=80",
     specifications: {
@@ -195,7 +195,7 @@ const SEED_PRODUCTS: SeedProduct[] = [
     product_type: "dimensioned",
     base_price: 4200.0,
     unit: "metre",
-    min_order_quantity: 10,
+    min_order_quantity: 1,
     is_featured: true,
     imageUrl: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=1200&q=80",
     specifications: {
@@ -231,7 +231,7 @@ const SEED_PRODUCTS: SeedProduct[] = [
     product_type: "standard",
     base_price: 5400.0,
     unit: "piece",
-    min_order_quantity: 50,
+    min_order_quantity: 1,
     is_featured: true,
     imageUrl: "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1200&q=80",
     specifications: {
@@ -266,7 +266,7 @@ const SEED_PRODUCTS: SeedProduct[] = [
     product_type: "standard",
     base_price: 2800.0,
     unit: "piece",
-    min_order_quantity: 5,
+    min_order_quantity: 1,
     is_featured: false,
     imageUrl: "https://images.unsplash.com/photo-1541888946425-d0fbb1861564?auto=format&fit=crop&w=1200&q=80",
     specifications: { material: "Aluminium / Aluzinc", length: "2000mm", girth: "450mm" },
@@ -298,7 +298,7 @@ const SEED_PRODUCTS: SeedProduct[] = [
     product_type: "service",
     base_price: 850.0,
     unit: "metre",
-    min_order_quantity: 5,
+    min_order_quantity: 1,
     is_featured: true,
     imageUrl: "https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?auto=format&fit=crop&w=1200&q=80",
     specifications: {

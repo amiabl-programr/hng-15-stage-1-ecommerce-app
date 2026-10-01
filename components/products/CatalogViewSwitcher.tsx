@@ -210,22 +210,37 @@ export function CatalogViewSwitcher({ products, totalCount }: CatalogViewSwitche
                     </span>
                   </div>
 
-                  <Link
-                    href={`/products/${product.slug}`}
-                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs uppercase tracking-wider px-6 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-xs"
-                  >
-                    {product.product_type === "dimensioned" ? (
-                      <>
-                        <Ruler className="w-3.5 h-3.5" />
-                        <span>Configure Cuts</span>
-                      </>
-                    ) : (
-                      <>
-                        <ShoppingBag className="w-3.5 h-3.5" />
-                        <span>Add To Cart</span>
-                      </>
-                    )}
-                  </Link>
+                  {product.product_type === "dimensioned" ? (
+                    <Link
+                      href={`/products/${product.slug}`}
+                      className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs uppercase tracking-wider px-6 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-xs"
+                    >
+                      <Ruler className="w-3.5 h-3.5" />
+                      <span>Configure Cuts</span>
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => handleQuickAddToCart(product)}
+                      className={`w-full sm:w-auto font-extrabold text-xs uppercase tracking-wider px-6 py-2.5 rounded-lg transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer ${
+                        addedProductId === product.id
+                          ? "bg-emerald-600 text-white shadow-emerald-600/20"
+                          : "bg-blue-600 hover:bg-blue-700 text-white active:scale-[0.98]"
+                      }`}
+                    >
+                      {addedProductId === product.id ? (
+                        <>
+                          <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                          <span>Added to Cart!</span>
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingBag className="w-3.5 h-3.5" />
+                          <span>Add To Cart</span>
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
               </div>
             );
