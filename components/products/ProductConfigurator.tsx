@@ -19,7 +19,7 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
 
   // Dimensioned sheet length state (in metres)
   const [lengthMetres, setLengthMetres] = useState<number>(3.0);
-  const [quantity, setQuantity] = useState<number>(product.min_order_quantity || 1);
+  const [quantity, setQuantity] = useState<number>(1);
   const [specialInstructions, setSpecialInstructions] = useState<string>("");
   const [added, setAdded] = useState(false);
 
@@ -154,14 +154,16 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
               </label>
               <input
                 type="number"
-                min={product.min_order_quantity || 1}
+                min={1}
                 value={quantity}
-                onChange={(e) => setQuantity(Math.max(product.min_order_quantity || 1, parseInt(e.target.value) || 1))}
+                onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
                 className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500"
               />
-              <span className="text-[11px] text-slate-500 mt-1 block">
-                Min. order: {product.min_order_quantity} sheets
-              </span>
+              {product.min_order_quantity > 1 && (
+                <span className="text-[11px] text-slate-500 mt-1 block">
+                  Min. order: {product.min_order_quantity} sheets
+                </span>
+              )}
             </div>
           </div>
 
@@ -187,9 +189,9 @@ export function ProductConfigurator({ product }: ProductConfiguratorProps) {
           <div className="flex items-center gap-3">
             <input
               type="number"
-              min={product.min_order_quantity || 1}
+              min={1}
               value={quantity}
-              onChange={(e) => setQuantity(Math.max(product.min_order_quantity || 1, parseInt(e.target.value) || 1))}
+              onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
               className="w-32 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500"
             />
             {product.min_order_quantity > 1 && (

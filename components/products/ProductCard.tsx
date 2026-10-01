@@ -1,8 +1,12 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Product } from "@/types/database";
 import { formatCurrency } from "@/lib/utils";
-import { Star, ShoppingBag, Ruler, Eye, ArrowRight } from "lucide-react";
+import { useCartStore } from "@/lib/cart/store";
+import { Star, ShoppingBag, Ruler, Eye, Check } from "lucide-react";
 
 interface ProductCardProps {
   product: Product;
@@ -17,6 +21,9 @@ export function ProductCard({
   rating = 5,
   reviewCount = 6,
 }: ProductCardProps) {
+  const [added, setAdded] = useState(false);
+  const addItem = useCartStore((state) => state.addItem);
+
   const primaryImage =
     product.images?.find((img) => img.is_primary)?.image_url ||
     product.images?.[0]?.image_url ||
@@ -26,6 +33,37 @@ export function ProductCard({
   const originalPrice = discountPercent
     ? product.base_price * (1 + discountPercent / 100)
     : null;
+
+  const isDimensioned = product.product_type === "dimensioned";
+
+  const handleQuickAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const primaryVariant = product.variants?.[0];
+    const effectiveUnitPrice =
+      primaryVariant?.price_override != null
+        ? Number(primaryVariant.price_override)
+        : Number(product.base_price);
+
+    addItem({
+      productId: product.id,
+      productSlug: product.slug,
+      productName: product.name,
+      productType: product.product_type,
+      unit: product.unit,
+      basePrice: Number(product.base_price),
+      effectiveUnitPrice,
+      variantId: primaryVariant?.id,
+      variantName: primaryVariant?.name,
+      variantAttributes: primaryVariant?.attributes,
+      quantity: 1, // Exactly 1 item for items that can be bought individually
+      imageUrl: primaryImage,
+    });
+
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000);
+  };
 
   return (
     <div className="group bg-white border border-slate-200/90 rounded-xl overflow-hidden hover:border-blue-500 hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
@@ -126,22 +164,37 @@ export function ProductCard({
             </span>
           </div>
 
-          <Link
-            href={`/products/${product.slug}`}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs uppercase tracking-wider py-2.5 px-3 rounded-lg flex items-center justify-center gap-1.5 transition-colors shadow-xs group-hover:bg-blue-700"
-          >
-            {product.product_type === "dimensioned" ? (
-              <>
-                <Ruler className="w-3.5 h-3.5" />
-                <span>Configure Cuts</span>
-              </>
-            ) : (
-              <>
-                <ShoppingBag className="w-3.5 h-3.5" />
-                <span>Add To Cart</span>
-              </>
-            )}
-          </Link>
+          {isDimensioned ? (
+            <Link
+              href={`/products/${product.slug}`}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs uppercase tracking-wider py-2.5 px-3 rounded-lg flex items-center justify-center gap-1.5 transition-colors shadow-xs group-hover:bg-blue-700"
+            >
+              <Ruler className="w-3.5 h-3.5" />
+              <span>Configure Cuts</span>
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={handleQuickAddToCart}
+              className={`w-full font-extrabold text-xs uppercase tracking-wider py-2.5 px-3 rounded-lg flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer ${
+                added
+                  ? "bg-emerald-600 text-white shadow-emerald-600/20"
+                  : "bg-blue-600 hover:bg-blue-700 text-white active:scale-[0.98]"
+              }`}
+            >
+              {added ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-white" />
+                  <span>Added to Cart!</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingBag className="w-3.5 h-3.5" />
+                  <span>Add To Cart</span>
+                </>
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>

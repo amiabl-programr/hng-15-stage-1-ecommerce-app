@@ -74,7 +74,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
   // Custom sheet cut-to-length state
   const isDimensioned = product.product_type === "dimensioned";
   const [lengthMetres, setLengthMetres] = useState<number>(3.5);
-  const [quantity, setQuantity] = useState<number>(product.min_order_quantity || 1);
+  const [quantity, setQuantity] = useState<number>(1);
   const [specialInstructions, setSpecialInstructions] = useState<string>("");
   const [added, setAdded] = useState(false);
   const [activeTab, setActiveTab] = useState<"desc" | "specs" | "reviews">("desc");
@@ -339,7 +339,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
               <div className="flex items-center border border-slate-200 rounded-lg bg-white overflow-hidden shadow-2xs">
                 <button
                   type="button"
-                  onClick={() => setQuantity(Math.max(product.min_order_quantity || 1, quantity - 1))}
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   className="px-3 py-1.5 text-slate-600 hover:bg-slate-50 font-black text-xs"
                 >
                   -

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Product } from "@/types/database";
 import { ProductCard } from "@/components/products/ProductCard";
 import { formatCurrency } from "@/lib/utils";
+import { useCartStore } from "@/lib/cart/store";
 import {
   LayoutGrid,
   List,
@@ -25,6 +26,39 @@ interface CatalogViewSwitcherProps {
 export function CatalogViewSwitcher({ products, totalCount }: CatalogViewSwitcherProps) {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState<string>("relevance");
+  const [addedProductId, setAddedProductId] = useState<string | null>(null);
+
+  const addItem = useCartStore((state) => state.addItem);
+
+  const handleQuickAddToCart = (product: Product) => {
+    const primaryVariant = product.variants?.[0];
+    const effectiveUnitPrice =
+      primaryVariant?.price_override != null
+        ? Number(primaryVariant.price_override)
+        : Number(product.base_price);
+    const primaryImage =
+      product.images?.find((img) => img.is_primary)?.image_url ||
+      product.images?.[0]?.image_url ||
+      "https://images.unsplash.com/photo-1620027814885-f55a1cb8b776?auto=format&fit=crop&w=800&q=80";
+
+    addItem({
+      productId: product.id,
+      productSlug: product.slug,
+      productName: product.name,
+      productType: product.product_type,
+      unit: product.unit,
+      basePrice: Number(product.base_price),
+      effectiveUnitPrice,
+      variantId: primaryVariant?.id,
+      variantName: primaryVariant?.name,
+      variantAttributes: primaryVariant?.attributes,
+      quantity: 1, // Only 1 item for items that can be bought individually
+      imageUrl: primaryImage,
+    });
+
+    setAddedProductId(product.id);
+    setTimeout(() => setAddedProductId(null), 2000);
+  };
 
   // Local sorting
   const sortedProducts = [...products].sort((a, b) => {
