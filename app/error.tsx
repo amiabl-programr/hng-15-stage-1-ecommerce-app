@@ -12,7 +12,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("Global Application Error:", error);
+    console.error("Global Application Error encountered.");
   }, [error]);
 
   return (

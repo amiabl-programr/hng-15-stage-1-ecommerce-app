@@ -15,10 +15,7 @@ const serviceRoleKey =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !serviceRoleKey || supabaseUrl.includes("placeholder")) {
-  console.error("==================================================================");
-  console.error("❌ Cannot connect to Supabase:");
-  console.error("Please add your real NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SECRET_KEY or SUPABASE_SERVICE_ROLE_KEY in .env");
-  console.error("==================================================================");
+  console.error("Cannot connect to Supabase: Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SECRET_KEY in environment configuration.");
   process.exit(1);
 }
 
@@ -334,33 +331,31 @@ const SEED_PRODUCTS: SeedProduct[] = [
 ];
 
 export async function seed() {
-  console.log("🚀 Starting Type-Safe Supabase Seeder...");
+  console.log("Starting catalogue seeder...");
 
-  // 1. Seed Categories
-  console.log(`📁 Seeding ${SEED_CATEGORIES.length} categories...`);
+  console.log(`Seeding ${SEED_CATEGORIES.length} categories...`);
   const { data: insertedCategories, error: catErr } = await supabase
     .from("categories")
     .upsert(SEED_CATEGORIES, { onConflict: "slug" })
     .select("id, slug");
 
   if (catErr || !insertedCategories) {
-    console.error("❌ Failed inserting categories:", catErr);
+    console.error("Failed inserting categories.");
     process.exitCode = 1;
     return;
   }
 
   const categoryMap = new Map<string, string>(insertedCategories.map((c) => [c.slug, c.id]));
-  console.log(`✅ Categories seeded successfully (${insertedCategories.length} records).`);
+  console.log(`Categories seeded successfully (${insertedCategories.length} records).`);
 
-  // 2. Seed Products
-  console.log(`📦 Seeding ${SEED_PRODUCTS.length} products...`);
+  console.log(`Seeding ${SEED_PRODUCTS.length} products...`);
   let totalVariants = 0;
   let totalInventory = 0;
 
   for (const p of SEED_PRODUCTS) {
     const categoryId = categoryMap.get(p.categorySlug);
     if (!categoryId) {
-      console.warn(`⚠️ Warning: Category "${p.categorySlug}" not found. Skipping product "${p.name}".`);
+      console.warn(`Category "${p.categorySlug}" not found. Skipping product.`);
       continue;
     }
 
@@ -387,13 +382,12 @@ export async function seed() {
       .single();
 
     if (prodErr || !insertedProduct) {
-      console.error(`❌ Failed inserting product "${p.name}":`, prodErr);
+      console.error(`Failed inserting product "${p.name}".`);
       continue;
     }
 
     const productId = insertedProduct.id;
 
-    // Attach primary image
     await supabase.from("product_images").upsert(
       {
         product_id: productId,
@@ -405,7 +399,6 @@ export async function seed() {
       { onConflict: "product_id,display_order" }
     );
 
-    // Seed Variants & Inventory if provided
     if (p.variants && p.variants.length > 0) {
       for (const v of p.variants) {
         const { data: insertedVar, error: varErr } = await supabase
@@ -426,13 +419,12 @@ export async function seed() {
           .single();
 
         if (varErr || !insertedVar) {
-          console.error(`❌ Failed inserting variant "${v.name}":`, varErr);
+          console.error(`Failed inserting variant "${v.name}".`);
           continue;
         }
 
         totalVariants++;
 
-        // Sync inventory record
         await supabase.from("inventory").upsert(
           {
             product_id: productId,
@@ -445,7 +437,6 @@ export async function seed() {
         totalInventory++;
       }
     } else {
-      // Default stock record for non-variant product
       await supabase.from("inventory").upsert(
         {
           product_id: productId,
@@ -459,18 +450,16 @@ export async function seed() {
     }
   }
 
-  console.log("==================================================================");
-  console.log("🎉 Seeding Completed Successfully!");
+  console.log("Seeding completed successfully.");
   console.log(`- Categories: ${insertedCategories.length}`);
   console.log(`- Products:   ${SEED_PRODUCTS.length}`);
   console.log(`- Variants:   ${totalVariants}`);
   console.log(`- Inventory:  ${totalInventory}`);
-  console.log("==================================================================");
 }
 
 if (process.argv[1]?.replace(/\\/g, "/").endsWith("seed.ts")) {
-  seed().catch((err) => {
-    console.error("Unhandled seeding error:", err);
+  seed().catch(() => {
+    console.error("Unhandled seeding error occurred.");
     process.exit(1);
   });
 }

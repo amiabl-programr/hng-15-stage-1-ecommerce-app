@@ -61,15 +61,15 @@ export async function POST(request: Request) {
       });
 
     if (uploadError) {
-      console.error("[Admin Storage Upload Error]:", uploadError);
-      return NextResponse.json({ success: false, error: uploadError.message }, { status: 500 });
+      console.error("[Admin Storage Upload Error] Failed uploading file to storage.");
+      return NextResponse.json({ success: false, error: "Failed to upload image." }, { status: 500 });
     }
 
     const { data } = adminDb.storage.from("products").getPublicUrl(filePath);
 
     return NextResponse.json({ success: true, url: data.publicUrl });
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "Failed to upload image";
-    return NextResponse.json({ success: false, error: msg }, { status: 500 });
+  } catch {
+    console.error("[Admin Storage Upload Error] Unexpected upload error.");
+    return NextResponse.json({ success: false, error: "Failed to upload image." }, { status: 500 });
   }
 }

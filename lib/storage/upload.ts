@@ -31,8 +31,7 @@ export async function uploadProductImage(file: File): Promise<{ success: boolean
     }
 
     return { success: true, url: data.url };
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "Failed to upload image";
-    return { success: false, error: msg };
+  } catch {
+    return { success: false, error: "Failed to upload image. Please try again." };
   }
 }

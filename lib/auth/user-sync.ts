@@ -47,11 +47,10 @@ export async function syncGoogleUserToDatabase(
     if (!errGoogle && byGoogleId) {
       existingProfile = byGoogleId as Profile;
     }
-  } catch (err) {
-    console.warn("[User Sync] Query by google_id warning:", err);
+  } catch {
+    console.warn("[User Sync] Query by google_id warning.");
   }
 
-  // 2. If not found by google_id, look up by email
   if (!existingProfile) {
     try {
       const { data: byEmail, error: errEmail } = await adminDb
@@ -63,18 +62,16 @@ export async function syncGoogleUserToDatabase(
       if (!errEmail && byEmail) {
         existingProfile = byEmail as Profile;
       }
-    } catch (err) {
-      console.warn("[User Sync] Query by email warning:", err);
+    } catch {
+      console.warn("[User Sync] Query by email warning.");
     }
   }
 
-  // Determine final role
   let role: UserRole = "customer";
   if (isAdmin || (existingProfile && existingProfile.role === "admin")) {
     role = "admin";
   }
 
-  // 3. Update existing profile or Insert new profile
   if (existingProfile) {
     const updatedFields = {
       full_name: fullName,
@@ -92,18 +89,15 @@ export async function syncGoogleUserToDatabase(
       .single();
 
     if (updateErr) {
-      console.error("[User Sync] Failed updating profile:", updateErr);
-      // Return merged existing record so user can proceed
+      console.error("[User Sync] Failed updating profile.");
       return {
         ...existingProfile,
         ...updatedFields,
       };
     }
 
-    console.log(`[User Sync] Successfully updated profile for ${email} (role: ${role})`);
     return updated as Profile;
   } else {
-    // Insert new profile
     const newProfile: Profile = {
       id: crypto.randomUUID(),
       email: email,
@@ -123,12 +117,10 @@ export async function syncGoogleUserToDatabase(
       .single();
 
     if (insertErr) {
-      console.error("[User Sync] Failed inserting new profile:", insertErr);
-      // Still return new profile representation to establish session
+      console.error("[User Sync] Failed inserting new profile.");
       return newProfile;
     }
 
-    console.log(`[User Sync] Successfully created new user profile for ${email} (role: ${role})`);
     return inserted as Profile;
   }
 }

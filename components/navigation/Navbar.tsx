@@ -49,8 +49,8 @@ export function Navbar() {
             setProfile(data.user);
           }
         }
-      } catch (err) {
-        console.error("Failed fetching navbar user:", err);
+      } catch {
+        console.error("Failed fetching navbar user.");
       } finally {
         setLoadingUser(false);
       }
@@ -61,8 +61,8 @@ export function Navbar() {
   const handleSignOut = async () => {
     try {
       await fetch("/api/auth/logout", { method: "POST" });
-    } catch (err) {
-      console.error("Sign out error:", err);
+    } catch {
+      console.error("Sign out error.");
     }
     setProfile(null);
     window.location.href = "/";

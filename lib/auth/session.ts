@@ -113,8 +113,8 @@ export async function verifySessionToken(token: string): Promise<SessionUser | n
     }
 
     return session;
-  } catch (err) {
-    console.error("[Session] Verification failed:", err);
+  } catch {
+    console.error("[Session] Verification failed.");
     return null;
   }
 }
@@ -185,8 +185,8 @@ export async function getCurrentUserProfile(): Promise<Profile | null> {
       .single();
 
     if (profile) return profile as Profile;
-  } catch (err) {
-    console.error("[Session] Error fetching fresh profile:", err);
+  } catch {
+    console.error("[Session] Error fetching fresh profile.");
   }
 
   // Fallback to session representation if DB call fails

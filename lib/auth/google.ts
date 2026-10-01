@@ -88,7 +88,7 @@ export async function exchangeCodeForTokens(options: {
   const data = await response.json();
 
   if (!response.ok) {
-    console.error("[Google OAuth] Token exchange failed:", data);
+    console.error("[Google OAuth] Token exchange failed.");
     throw new Error(
       data.error_description || data.error || "Failed to exchange authorization code with Google."
     );
@@ -97,9 +97,6 @@ export async function exchangeCodeForTokens(options: {
   return data as GoogleTokens;
 }
 
-/**
- * Fetches the user profile from Google's OpenID Connect userinfo endpoint.
- */
 export async function getGoogleUserInfo(accessToken: string): Promise<GoogleUserInfo> {
   const response = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
     headers: {
@@ -108,8 +105,7 @@ export async function getGoogleUserInfo(accessToken: string): Promise<GoogleUser
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    console.error("[Google OAuth] Failed to fetch userinfo:", errorText);
+    console.error("[Google OAuth] Failed to fetch userinfo.");
     throw new Error("Failed to retrieve user profile from Google.");
   }
 

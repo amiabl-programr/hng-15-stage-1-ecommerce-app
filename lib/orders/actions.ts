@@ -39,7 +39,7 @@ export async function createOrderAction(rawPayload: CreateOrderPayload): Promise
       .in("id", productIds);
 
     if (prodErr || !dbProducts) {
-      console.error("[Order Error] Failed fetching products from database:", prodErr);
+      console.error("[Order Error] Failed fetching products from database.");
       return { success: false, error: "Unable to verify products. Please try again." };
     }
 
@@ -170,11 +170,10 @@ export async function createOrderAction(rawPayload: CreateOrderPayload): Promise
       .single();
 
     if (orderInsertErr || !newOrder) {
-      console.error("[Order Error] Failed creating order record:", orderInsertErr);
+      console.error("[Order Error] Failed creating order record.");
       return { success: false, error: "Failed to create order record. Please try again." };
     }
 
-    // 5. Insert order items
     const itemsToInsert = verifiedOrderItems.map((item) => ({
       order_id: newOrder.id,
       ...item,
@@ -186,11 +185,9 @@ export async function createOrderAction(rawPayload: CreateOrderPayload): Promise
       .select();
 
     if (itemsInsertErr) {
-      console.error("[Order Error] Failed creating order items:", itemsInsertErr);
-      // Even if items insert encountered issue, log for review
+      console.error("[Order Error] Failed creating order items.");
     }
 
-    // 6. Deduct inventory for variant items
     for (const item of verifiedOrderItems) {
       if (item.variant_id) {
         try {
@@ -200,7 +197,6 @@ export async function createOrderAction(rawPayload: CreateOrderPayload): Promise
           });
           if (rpcErr) throw rpcErr;
         } catch {
-          // Fallback direct decrement if RPC is not installed
           const { data: currentVar } = await adminDb
             .from("product_variants")
             .select("stock_quantity")
@@ -217,12 +213,11 @@ export async function createOrderAction(rawPayload: CreateOrderPayload): Promise
       }
     }
 
-    // 7. Dispatch asynchronous Mailgun confirmation email (Decoupled from order status)
     sendOrderConfirmationEmail(
       newOrder as Order,
       (createdItems || verifiedOrderItems) as OrderItem[]
-    ).catch((mailErr) => {
-      console.error("[Email Async Error] Mailgun failed silently:", mailErr);
+    ).catch(() => {
+      console.error("[Email Async Error] Email delivery failed.");
     });
 
     return {
@@ -230,9 +225,8 @@ export async function createOrderAction(rawPayload: CreateOrderPayload): Promise
       orderId: newOrder.id,
       orderNumber: newOrder.order_number,
     };
-  } catch (err: unknown) {
-    const errorMsg = err instanceof Error ? err.message : "Unexpected checkout error";
-    console.error("[Checkout Server Action Exception]:", errorMsg);
+  } catch {
+    console.error("[Checkout Server Action Exception] Unexpected checkout error.");
     return { success: false, error: "An unexpected error occurred during checkout." };
   }
 }

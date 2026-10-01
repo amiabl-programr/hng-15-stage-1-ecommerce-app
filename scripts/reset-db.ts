@@ -3,7 +3,6 @@ import * as dotenv from "dotenv";
 import * as path from "path";
 import { seed } from "./seed";
 
-// 1. Load environment variables (.env.local or .env)
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
@@ -16,10 +15,7 @@ const serviceRoleKey =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !serviceRoleKey || supabaseUrl.includes("placeholder")) {
-  console.error("==================================================================");
-  console.error("❌ Database Reset Aborted: Missing Supabase credentials in .env");
-  console.error("Please ensure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set.");
-  console.error("==================================================================");
+  console.error("Database reset aborted: Missing required Supabase credentials in environment configuration.");
   process.exit(1);
 }
 
@@ -31,12 +27,8 @@ const supabase = createClient(supabaseUrl, serviceRoleKey, {
 });
 
 async function resetDatabase() {
-  console.log("==================================================================");
-  console.log("⚠️  ROOFIX DATABASE RESET INITIATED");
-  console.log("Connecting to:", supabaseUrl);
-  console.log("==================================================================");
+  console.log("Database reset initiated.");
 
-  // Tables to clear in strict reverse-dependency order
   const tablesToClear = [
     { name: "order_items", filterColumn: "id" },
     { name: "orders", filterColumn: "id" },
@@ -48,34 +40,32 @@ async function resetDatabase() {
     { name: "categories", filterColumn: "id" },
   ];
 
-  console.log("\n🧹 Step 1: Purging operational & catalogue records...");
+  console.log("Purging operational and catalogue records...");
 
   for (const { name, filterColumn } of tablesToClear) {
-    process.stdout.write(`   → Clearing "${name}"... `);
+    try {
+      const { error, count } = await supabase
+        .from(name)
+        .delete({ count: "exact" })
+        .not(filterColumn, "is", null);
 
-    // Delete all records where filterColumn is not null
-    const { error, count } = await supabase
-      .from(name)
-      .delete({ count: "exact" })
-      .not(filterColumn, "is", null);
-
-    if (error) {
-      // In case table doesn't exist or is empty
-      console.log(`⚠️ (${error.message})`);
-    } else {
-      console.log(`✓ Deleted ${count ?? 0} rows`);
+      if (error) {
+        console.warn(`Could not clear table ${name}.`);
+      } else {
+        console.log(`Cleared ${name}: ${count ?? 0} records removed.`);
+      }
+    } catch {
+      console.warn(`Unexpected error clearing table ${name}.`);
     }
   }
 
-  console.log("\n🌱 Step 2: Re-seeding clean catalogue and inventory...");
+  console.log("Re-seeding catalogue and inventory...");
   await seed();
 
-  console.log("\n==================================================================");
-  console.log("✅ DATABASE RESET & RE-SEEDING COMPLETED SUCCESSFULLY!");
-  console.log("==================================================================\n");
+  console.log("Database reset and re-seeding completed successfully.");
 }
 
-resetDatabase().catch((err) => {
-  console.error("\n❌ Database reset failed with error:", err);
+resetDatabase().catch(() => {
+  console.error("Database reset failed.");
   process.exit(1);
 });

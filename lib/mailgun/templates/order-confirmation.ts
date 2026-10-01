@@ -130,3 +130,31 @@ export function generateOrderConfirmationHtml(order: Order, items: OrderItem[]):
     </html>
   `;
 }
+
+export function generateOrderConfirmationText(order: Order, items: OrderItem[]): string {
+  const itemsText = items
+    .map((item) => `- ${item.product_name} x ${item.quantity}: ${formatCurrency(item.line_total)}`)
+    .join("\n");
+
+  return `
+ROOFING CONSTRUCTION SHOP - ORDER CONFIRMATION
+===============================================
+Order Number: ${order.order_number}
+Order Date: ${formatDateTime(order.created_at)}
+Customer: ${order.customer_name} (${order.customer_email})
+Delivery To: ${order.delivery_address.street_address}, ${order.delivery_address.city}, ${order.delivery_address.state}
+
+ITEMS ORDERED:
+${itemsText}
+
+Subtotal: ${formatCurrency(order.subtotal)}
+Delivery Fee: ${formatCurrency(order.delivery_fee)}
+Total Payable: ${formatCurrency(order.total_amount)}
+Payment Method: ${order.payment_method}
+Payment Status: ${order.payment_status}
+
+Thank you for your order. Our logistics team will contact you regarding dispatch.
+Technical dispatch: support@roofingco.com | +234 800 766 3464
+  `.trim();
+}
+

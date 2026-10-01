@@ -15,8 +15,8 @@ export async function GET(request: Request) {
   const next = searchParams.get("next") ?? "/account";
 
   if (error) {
-    console.error("[Auth Callback] Error returned from provider:", error);
-    return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(error)}`);
+    console.error("[Auth Callback] Authentication error returned from provider.");
+    return NextResponse.redirect(`${origin}/login?error=AuthenticationFailed`);
   }
 
   if (!code) {
@@ -66,9 +66,8 @@ export async function GET(request: Request) {
     }
 
     return NextResponse.redirect(`${origin}${nextPath}`);
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "AuthenticationFailed";
-    console.error("[Auth Callback] Google authentication error:", err);
-    return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(msg)}`);
+  } catch {
+    console.error("[Auth Callback] Google authentication error.");
+    return NextResponse.redirect(`${origin}/login?error=AuthenticationFailed`);
   }
 }

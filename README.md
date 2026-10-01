@@ -4,25 +4,25 @@ A production-ready, full-stack architectural roofing and metal fabrication e-com
 
 ---
 
-## 🏗️ Features
+## Features
 
-### 🛒 Customer Storefront
+### Customer Storefront
 * **Architectural & Industrial Roofing**: Longspan aluminium, Metcopo, Classic Step Tiles, Stone-Coated Shingles, Ridge Caps, Valley Trimmers, Parapet Copings, and Corrugated Sheets.
 * **Cut-to-Length Calculator**: Interactive sheet length calculator for dimensioned roofing sheets (calculates linear metres × gauge rate × quantity in real-time).
 * **Bespoke Fabrication Inquiries**: Direct contractor submission portal for on-site continuous roll-forming rigs (up to 30 metres unbroken), CNC press brake sheet bending, and radius arch curving.
 * **Persistent Shopping Cart**: Zustand client store synchronized with `localStorage` for offline persistence and hydration safety.
 * **Authoritative Server Checkout**: Server actions independently recalculate all line totals, enforce minimum order quantities, verify stock, and compute site delivery fees.
 
-### 🔐 Authentication & Accounts
-* **Supabase Auth + Google OAuth**: Secure single-click sign-in for contractors and homeowners.
+### Authentication & Accounts
+* **Google OAuth 2.0 Flow**: Direct single-click sign-in for contractors and homeowners.
 * **Role-Based Access Control (RBAC)**: Distinguishes `customer` and `admin` roles, backed by PostgreSQL Row Level Security (RLS) policies.
 * **Customer Account Dashboard**: View profile details, track order progress via a 6-step dispatch pipeline, and review cutting specifications.
 
-### ✉️ Transactional Notifications
+### Transactional Notifications
 * **Mailgun Email Integration**: High-deliverability HTML order confirmation invoices dispatched asynchronously upon order placement.
 * **Fault-Tolerant Checkout**: Mailgun delivery failures are safely caught and logged without aborting or corrupting valid database transactions.
 
-### 🛡️ Admin Operations Portal
+### Admin Operations Portal
 * **Operations Dashboard**: Gross revenue tracking, total order volume, active catalogue items, and low-stock threshold alerts.
 * **Order & Dispatch Fulfillment**: Review cutting specifications, customer contacts, site destinations, and advance statuses (`pending`, `paid`, `processing`, `ready_for_delivery`, `shipped`, `completed`, `cancelled`).
 * **Inventory Control**: Real-time stock view with inline stock replenishment adjustments.
@@ -32,7 +32,7 @@ A production-ready, full-stack architectural roofing and metal fabrication e-com
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 | Layer | Technology |
 | :--- | :--- |
@@ -46,7 +46,7 @@ A production-ready, full-stack architectural roofing and metal fabrication e-com
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 app/
@@ -96,7 +96,7 @@ lib/
 ├── mailgun/               # Transactional email service & HTML templates
 ├── storage/               # Supabase Storage client uploader
 ├── validation/            # Zod validation schemas
-└── utils.ts               # Currency (NGN ₦), date formatting, order numbers
+└── utils.ts               # Currency (NGN), date formatting, order numbers
 
 supabase/
 ├── migrations/            # 20261001000001_init_roofing_schema.sql (RLS, tables, triggers)
@@ -105,7 +105,7 @@ supabase/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Clone & Install Dependencies
 
@@ -132,11 +132,6 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-public-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-secret-key
 
 # Direct Google OAuth 2.0 Credentials (Google Cloud Console)
-# In Google Cloud Console -> APIs & Services -> Credentials -> OAuth 2.0 Client IDs
-# Authorized JavaScript origins: http://localhost:3000
-# Authorized redirect URIs:
-#   http://localhost:3000/api/auth/callback/google
-#   http://localhost:3000/callback
 GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 
@@ -144,7 +139,6 @@ GOOGLE_CLIENT_SECRET=your-google-client-secret
 SESSION_SECRET=your-random-32-byte-hex-or-phrase
 
 # Designate Administrator Email(s)
-# Users signing in with these emails will be automatically elevated to 'admin'
 ADMIN_EMAILS="admin@yourroofingco.com,manager@yourroofingco.com"
 
 # Mailgun Transactional Email Configuration
@@ -158,7 +152,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 ---
 
-## 🗄️ Database Setup & Migrations
+## Database Setup & Migrations
 
 ### Run Migrations in Supabase
 
@@ -191,27 +185,21 @@ To wipe out test orders, inventory adjustments, and draft items, and restore a p
 
 ---
 
-## 🔑 Authentication & Google Cloud Setup
+## Authentication & Google Cloud Setup
 
 1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
 2. Create or select a project, then navigate to **APIs & Services > Credentials**.
 3. Create an **OAuth 2.0 Client ID** (Application type: *Web application*).
 4. Add Authorized Redirect URI:
    ```text
-   https://<your-supabase-project-id>.supabase.co/auth/v1/callback
-   ```
-5. In your **Supabase Dashboard**, go to **Authentication > Providers > Google**:
-   * Enable Google.
-   * Paste your `Client ID` and `Client Secret`.
-6. Add your application callback URL under Supabase **Authentication > URL Configuration**:
-   ```text
+   http://localhost:3000/api/auth/callback/google
    http://localhost:3000/callback
-   https://your-production-domain.com/callback
    ```
+5. Add your credentials to `.env`.
 
 ---
 
-## 📦 Supabase Storage Setup
+## Supabase Storage Setup
 
 The migration script creates a public storage bucket named `products`.
 
@@ -222,16 +210,16 @@ To verify:
 
 ---
 
-## 📧 Mailgun Setup
+## Mailgun Setup
 
-1. Create a free or production domain in [Mailgun](https://www.mailgun.com/).
+1. Create a domain in [Mailgun](https://www.mailgun.com/).
 2. Copy your **Private API Key** and **Domain**.
 3. Set `MAILGUN_API_KEY`, `MAILGUN_DOMAIN`, and `MAILGUN_FROM_EMAIL` in `.env`.
 4. When orders are created via the checkout flow, an itemized invoice is dispatched automatically to the customer's email.
 
 ---
 
-## 💻 Local Development & Production Build
+## Local Development & Production Build
 
 ### Run Development Server
 
@@ -250,7 +238,7 @@ pnpm start
 
 ---
 
-## 🚢 Deployment (Vercel)
+## Deployment (Vercel)
 
 1. Push your repository to GitHub / GitLab.
 2. Import the project into [Vercel](https://vercel.com).
@@ -262,12 +250,12 @@ pnpm start
    * `MAILGUN_API_KEY`
    * `MAILGUN_DOMAIN`
    * `MAILGUN_FROM_EMAIL`
-   * `NEXT_PUBLIC_APP_URL` (set to your Vercel production domain)
-4. Deploy!
+   * `NEXT_PUBLIC_APP_URL`
+4. Deploy.
 
 ---
 
-## 🛡️ Security & Integrity Checklist
+## Security & Integrity Checklist
 
 - [x] **Zero Client Trust Pricing**: Order totals calculated server-side against database records.
 - [x] **Inventory Protection**: Atomic inventory deduction on verified variant stock.

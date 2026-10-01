@@ -3,6 +3,7 @@
 import { getSession } from "@/lib/auth/session";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { fabricationRequestSchema, FabricationRequestFormData } from "@/lib/validation/checkout";
+import { sendFabricationInquiryEmail } from "@/lib/mailgun";
 
 export async function submitFabricationRequestAction(rawPayload: FabricationRequestFormData) {
   const parseResult = fabricationRequestSchema.safeParse(rawPayload);
@@ -41,13 +42,18 @@ export async function submitFabricationRequestAction(rawPayload: FabricationRequ
       .single();
 
     if (error) {
-      console.error("[Fabrication Action Error]:", error);
+      console.error("[Fabrication Action Error] Database error occurred.");
       return { success: false, error: "Failed to submit request. Please try again." };
     }
 
+    // Dispatch asynchronous inquiry confirmation email
+    sendFabricationInquiryEmail(requestRecord as any).catch((mailErr) => {
+      console.error("[Email Async Error] Fabrication inquiry email error:", mailErr);
+    });
+
     return { success: true, requestId: requestRecord.id };
-  } catch (err: unknown) {
-    const errorMsg = err instanceof Error ? err.message : "Submission failure";
-    return { success: false, error: errorMsg };
+  } catch {
+    console.error("[Fabrication Action Exception] Unexpected error occurred.");
+    return { success: false, error: "Failed to submit request. Please try again." };
   }
 }

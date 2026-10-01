@@ -56,8 +56,8 @@ export function CheckoutForm() {
             if (profile.phone) setValue("phone", profile.phone);
           }
         }
-      } catch (err) {
-        console.error("Error checking user for checkout:", err);
+      } catch {
+        console.error("Error checking user for checkout.");
       }
     }
     checkUser();

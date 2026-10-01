@@ -2,7 +2,8 @@
 
 import { getSession, getCurrentUserProfile } from "@/lib/auth/session";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { OrderStatus, PaymentStatus } from "@/types/database";
+import { Order, OrderStatus, PaymentStatus } from "@/types/database";
+import { sendOrderStatusUpdateEmail } from "@/lib/mailgun";
 import { revalidatePath } from "next/cache";
 
 // Verification helper ensuring requesting user has admin role
@@ -30,6 +31,15 @@ async function verifyAdmin() {
   throw new Error("Forbidden: Administrator privileges required.");
 }
 
+function sanitizeAdminError(err: unknown, fallback: string): string {
+  if (err instanceof Error) {
+    if (err.message.startsWith("Unauthorized") || err.message.startsWith("Forbidden")) {
+      return err.message;
+    }
+  }
+  return fallback;
+}
+
 export async function updateOrderStatusAction(
   orderId: string,
   status: OrderStatus,
@@ -48,16 +58,26 @@ export async function updateOrderStatusAction(
       updateData.payment_status = paymentStatus;
     }
 
-    const { error } = await adminDb.from("orders").update(updateData).eq("id", orderId);
+    const { data: updatedOrder, error } = await adminDb
+      .from("orders")
+      .update(updateData)
+      .eq("id", orderId)
+      .select()
+      .single();
 
     if (error) throw error;
+
+    if (updatedOrder?.customer_email) {
+      sendOrderStatusUpdateEmail(updatedOrder as Order, status).catch((mailErr) => {
+        console.error("[Email Async Error] Order status notification failed:", mailErr);
+      });
+    }
 
     revalidatePath("/admin/orders");
     revalidatePath(`/account/orders/${orderId}`);
     return { success: true };
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "Failed to update order status";
-    return { success: false, error: msg };
+    return { success: false, error: sanitizeAdminError(err, "Failed to update order status.") };
   }
 }
 
@@ -80,8 +100,7 @@ export async function updateStockAction(variantId: string, newQuantity: number) 
     revalidatePath("/admin/products");
     return { success: true };
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "Failed to update stock";
-    return { success: false, error: msg };
+    return { success: false, error: sanitizeAdminError(err, "Failed to update stock.") };
   }
 }
 
@@ -134,8 +153,7 @@ export async function createProductAction(data: {
     revalidatePath("/products");
     return { success: true, productId: newProd.id };
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "Failed to create product";
-    return { success: false, error: msg };
+    return { success: false, error: sanitizeAdminError(err, "Failed to create product.") };
   }
 }
 
@@ -163,7 +181,6 @@ export async function createCategoryAction(data: {
     revalidatePath("/categories");
     return { success: true };
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "Failed to create category";
-    return { success: false, error: msg };
+    return { success: false, error: sanitizeAdminError(err, "Failed to create category.") };
   }
 }
