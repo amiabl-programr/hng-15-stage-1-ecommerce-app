@@ -1,10 +1,19 @@
-import { getAllProducts, getCategories } from "@/lib/products/queries";
-import { ProductCard } from "@/components/products/ProductCard";
 import Link from "next/link";
-import { Search, Filter, SlidersHorizontal, PackageX } from "lucide-react";
+import Image from "next/image";
+import { getAllProducts, getCategories } from "@/lib/products/queries";
+import { CatalogViewSwitcher } from "@/components/products/CatalogViewSwitcher";
+import {
+  Search,
+  Filter,
+  SlidersHorizontal,
+  ChevronRight,
+  ShieldCheck,
+  Check,
+  HelpCircle,
+} from "lucide-react";
 
 export const metadata = {
-  title: "Roofing Materials & Sheet Catalog | Roofing Construction Shop",
+  title: "Shop Catalogue | Architectural Roofing Sheets & Coil Fabrication",
   description:
     "Explore our complete inventory of longspan sheets, step tiles, metcopo, shingles, trimmers, ridge caps, and custom metal fabrication.",
 };
@@ -26,7 +35,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     getAllProducts(category),
   ]);
 
-  // Client / SSR filtering
+  // Server-side filtering
   let filteredProducts = [...allProducts];
 
   if (search) {
@@ -43,162 +52,287 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     filteredProducts = filteredProducts.filter((p) => p.product_type === type);
   }
 
-  if (sort === "price-asc") {
-    filteredProducts.sort((a, b) => a.base_price - b.base_price);
-  } else if (sort === "price-desc") {
-    filteredProducts.sort((a, b) => b.base_price - a.base_price);
-  } else if (sort === "name") {
-    filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
-  }
-
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Header */}
-      <div className="mb-8">
-        <span className="text-xs font-bold text-amber-500 tracking-wider uppercase">
-          Engineered Inventory
-        </span>
-        <h1 className="text-3xl sm:text-4xl font-black text-white mt-1">
-          Roofing Materials & Fabrication Catalogue
-        </h1>
-        <p className="text-slate-400 text-sm mt-2 max-w-2xl">
-          Order pre-cut standard products or enter custom dimensions for continuous roll-formed
-          aluminium and steel sheets.
-        </p>
-      </div>
-
-      {/* Filter / Search Bar */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 sm:p-5 mb-10 space-y-4">
-        <form method="GET" className="grid grid-cols-1 sm:grid-cols-12 gap-3">
-          {/* Search Input */}
-          <div className="sm:col-span-5 relative">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              name="search"
-              defaultValue={search || ""}
-              placeholder="Search by profile name, gauge, alloy..."
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
-            />
-          </div>
-
-          {/* Category Dropdown */}
-          <div className="sm:col-span-3">
-            <select
-              name="category"
-              defaultValue={category || ""}
-              className="w-full py-2.5 px-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-amber-500"
-            >
-              <option value="">All Categories</option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.slug}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Product Type Dropdown */}
-          <div className="sm:col-span-2">
-            <select
-              name="type"
-              defaultValue={type || "all"}
-              className="w-full py-2.5 px-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-amber-500"
-            >
-              <option value="all">All Types</option>
-              <option value="dimensioned">Custom Length</option>
-              <option value="standard">Standard Products</option>
-              <option value="service">Services</option>
-            </select>
-          </div>
-
-          {/* Sort Dropdown */}
-          <div className="sm:col-span-2">
-            <select
-              name="sort"
-              defaultValue={sort || "featured"}
-              className="w-full py-2.5 px-3 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-amber-500"
-            >
-              <option value="featured">Featured</option>
-              <option value="price-asc">Price: Low to High</option>
-              <option value="price-desc">Price: High to Low</option>
-              <option value="name">Name A-Z</option>
-            </select>
-          </div>
-
-          <div className="sm:col-span-12 flex justify-end gap-2 pt-2">
-            {(category || search || (type && type !== "all") || (sort && sort !== "featured")) && (
-              <Link
-                href="/products"
-                className="text-xs text-slate-400 hover:text-white px-3 py-2"
-              >
-                Clear Filters
-              </Link>
-            )}
-            <button
-              type="submit"
-              className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs px-5 py-2 rounded-lg transition-colors cursor-pointer"
-            >
-              Apply Filter
-            </button>
-          </div>
-        </form>
-      </div>
-
-      {/* Category Quick Chips */}
-      <div className="flex gap-2 overflow-x-auto pb-4 mb-8 scrollbar-none text-xs">
-        <Link
-          href="/products"
-          className={`px-3.5 py-1.5 rounded-full border transition-colors whitespace-nowrap ${
-            !category
-              ? "bg-amber-500 text-slate-950 font-bold border-amber-500"
-              : "bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-white"
-          }`}
-        >
-          All Items ({allProducts.length})
-        </Link>
-        {categories.map((c) => (
-          <Link
-            key={c.id}
-            href={`/products?category=${c.slug}`}
-            className={`px-3.5 py-1.5 rounded-full border transition-colors whitespace-nowrap ${
-              category === c.slug
-                ? "bg-amber-500 text-slate-950 font-bold border-amber-500"
-                : "bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-white"
-            }`}
-          >
-            {c.name}
-          </Link>
-        ))}
-      </div>
-
-      {/* Products Grid or Empty State */}
-      {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-20 bg-slate-900/50 rounded-2xl border border-slate-800 p-8">
-          <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto text-slate-400 mb-4">
-            <PackageX className="w-8 h-8" />
-          </div>
-          <h3 className="text-lg font-bold text-white">No Roofing Materials Found</h3>
-          <p className="text-sm text-slate-400 mt-1 max-w-md mx-auto">
-            No items matched your current filter criteria. Try adjusting your search query or reset
-            the filters.
-          </p>
-          <div className="mt-6">
-            <Link
-              href="/products"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 text-slate-950 font-bold text-xs rounded-lg hover:bg-amber-400 transition-colors"
-            >
-              Reset All Filters
+    <div className="space-y-12 pb-16">
+      {/* 1. Shop Top Header & Breadcrumbs (Image 2/4 Style) */}
+      <section className="bg-slate-50 border-b border-slate-200 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
+          <nav className="flex items-center gap-1.5 text-xs text-slate-500">
+            <Link href="/" className="hover:text-blue-600 transition-colors">
+              Home
             </Link>
-          </div>
+            <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+            <span className="font-semibold text-slate-800">Shop</span>
+            {category && (
+              <>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                <span className="font-bold text-blue-600 capitalize">
+                  {category.replace(/-/g, " ")}
+                </span>
+              </>
+            )}
+          </nav>
+
+          <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tight">
+            Shop Materials & Profiles
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 max-w-3xl leading-relaxed">
+            Direct mill inventory of high-tensile aluzinc coils, marine-grade aluminium sheets, stone-coated luxury shingles, and CNC press-bent ridge accessories.
+          </p>
         </div>
-      )}
+      </section>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+        {/* 2. Subcategories Visual Cards Row (Image 2/4 Top Tiles) */}
+        <section className="space-y-3">
+          <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">
+            Subcategories
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+            {categories.slice(0, 6).map((cat) => {
+              const isSelected = category === cat.slug;
+              return (
+                <Link
+                  key={cat.id}
+                  href={isSelected ? "/products" : `/products?category=${cat.slug}`}
+                  className={`p-3.5 rounded-xl border text-center transition-all flex flex-col items-center justify-center gap-2 group ${
+                    isSelected
+                      ? "border-blue-600 bg-blue-50/50 shadow-xs ring-1 ring-blue-600"
+                      : "border-slate-200 bg-white hover:border-blue-400 hover:shadow-xs"
+                  }`}
+                >
+                  <div className="relative w-12 h-12 rounded-lg bg-slate-100 overflow-hidden shrink-0">
+                    <Image
+                      src={cat.image_url || "https://images.unsplash.com/photo-1620027814885-f55a1cb8b776?auto=format&fit=crop&w=200&q=80"}
+                      alt={cat.name}
+                      fill
+                      sizes="48px"
+                      className="object-cover group-hover:scale-105 transition-transform"
+                    />
+                  </div>
+                  <span className="text-xs font-bold text-slate-800 group-hover:text-blue-600 transition-colors line-clamp-1">
+                    {cat.name}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* 3. Main Grid: Filter Sidebar + Products (Grid & List View) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left Filter Sidebar (3 cols) */}
+          <aside className="lg:col-span-3 space-y-6 bg-white border border-slate-200 rounded-xl p-5 shadow-2xs">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                <SlidersHorizontal className="w-4 h-4 text-blue-600" />
+                <span>Filter By</span>
+              </h3>
+              {(category || search) && (
+                <Link
+                  href="/products"
+                  className="text-[11px] font-bold text-red-600 hover:underline"
+                >
+                  Reset
+                </Link>
+              )}
+            </div>
+
+            {/* Filter Group: Categories */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+                Categories
+              </h4>
+              <div className="space-y-2 text-xs">
+                <Link
+                  href="/products"
+                  className={`flex items-center justify-between py-1 transition-colors ${
+                    !category ? "text-blue-600 font-extrabold" : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  <span>All Profiles</span>
+                  <span className="text-[10px] text-slate-400">({allProducts.length})</span>
+                </Link>
+                {categories.map((c) => (
+                  <Link
+                    key={c.id}
+                    href={`/products?category=${c.slug}`}
+                    className={`flex items-center justify-between py-1 transition-colors ${
+                      category === c.slug
+                        ? "text-blue-600 font-extrabold"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    <span>{c.name}</span>
+                    <span className="text-[10px] text-slate-400">
+                      ({allProducts.filter((p) => p.category_id === c.id).length})
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Filter Group: Availability */}
+            <div className="pt-4 border-t border-slate-100 space-y-2">
+              <h4 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+                Availability
+              </h4>
+              <div className="space-y-1.5 text-xs text-slate-600">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    defaultChecked
+                    className="w-3.5 h-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
+                  />
+                  <span>In Stock (Factory Depots)</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    defaultChecked
+                    className="w-3.5 h-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
+                  />
+                  <span>Custom On-Site Cut</span>
+                </label>
+              </div>
+            </div>
+
+            {/* Filter Group: Thickness / Gauge */}
+            <div className="pt-4 border-t border-slate-100 space-y-2">
+              <h4 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+                Thickness / Gauge
+              </h4>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                {["0.45mm", "0.50mm", "0.55mm", "0.65mm"].map((g) => (
+                  <span
+                    key={g}
+                    className="px-2.5 py-1 bg-slate-50 border border-slate-200 rounded text-center font-bold text-slate-700 hover:border-blue-500 hover:text-blue-600 cursor-pointer transition-colors"
+                  >
+                    {g}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Filter Group: Color Swatches (Image 2/4 Style) */}
+            <div className="pt-4 border-t border-slate-100 space-y-2">
+              <h4 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+                Coil Color
+              </h4>
+              <div className="flex flex-wrap gap-2 pt-1">
+                {[
+                  { name: "Charcoal Black", color: "#1e293b" },
+                  { name: "Wine Red", color: "#881337" },
+                  { name: "Traffic Blue", color: "#1d4ed8" },
+                  { name: "Forest Green", color: "#14532d" },
+                  { name: "Slate Grey", color: "#64748b" },
+                  { name: "Coffee Brown", color: "#451a03" },
+                ].map((c) => (
+                  <button
+                    key={c.name}
+                    title={c.name}
+                    className="w-6 h-6 rounded-full border-2 border-white ring-1 ring-slate-200 hover:scale-110 transition-transform cursor-pointer"
+                    style={{ backgroundColor: c.color }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Filter Group: Material */}
+            <div className="pt-4 border-t border-slate-100 space-y-2">
+              <h4 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+                Material
+              </h4>
+              <div className="space-y-1.5 text-xs text-slate-600">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    defaultChecked
+                    className="w-3.5 h-3.5 text-blue-600 rounded border-slate-300"
+                  />
+                  <span>Aluminium Alloy 3003</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    defaultChecked
+                    className="w-3.5 h-3.5 text-blue-600 rounded border-slate-300"
+                  />
+                  <span>Galvalume / Aluzinc Steel</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    defaultChecked
+                    className="w-3.5 h-3.5 text-blue-600 rounded border-slate-300"
+                  />
+                  <span>Stone-Coated Basalt</span>
+                </label>
+              </div>
+            </div>
+          </aside>
+
+          {/* Right Product Grid & List View (9 cols) */}
+          <main className="lg:col-span-9 space-y-6">
+            <CatalogViewSwitcher
+              products={filteredProducts}
+              totalCount={filteredProducts.length}
+            />
+          </main>
+        </div>
+
+        {/* 4. Bottom Rich Architectural & Material Guide (Images 2 & 4 Bottom) */}
+        <section className="bg-slate-50 border border-slate-200 rounded-2xl p-8 sm:p-12 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div className="space-y-4">
+              <span className="text-xs font-extrabold text-blue-600 uppercase tracking-widest">
+                Technical Specifications & Standards
+              </span>
+              <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight">
+                Architectural Standards for Tropical Roofing Resilience
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                With durable materials such as 3003-H16 high-grade aluminium and zinc-alloy coated steel, our roofing sheets offer superior structural tensile strength and long-lasting performance against coastal humidity, industrial acid rain, and equatorial solar degradation.
+              </p>
+              <ul className="space-y-2 text-xs text-slate-700 font-medium">
+                <li className="flex items-start gap-2">
+                  <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                  <span><strong>Zero End-Lap Seams:</strong> Continuous mobile extrusion eliminates horizontal lap joints that cause storm water ingress.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                  <span><strong>Heavy Gauge Verification:</strong> Micrometer verified thicknesses from 0.45mm up to 0.65mm ensure zero wind flutter.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                  <span><strong>Fluorocarbon (PVDF) Resin:</strong> Tested for 25+ years anti-chalking and ultraviolet fade resistance.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="relative aspect-square rounded-xl overflow-hidden shadow-sm">
+                <Image
+                  src="https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=600&q=80"
+                  alt="Metcopo Installation"
+                  fill
+                  sizes="300px"
+                  className="object-cover"
+                />
+              </div>
+              <div className="relative aspect-square rounded-xl overflow-hidden shadow-sm">
+                <Image
+                  src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80"
+                  alt="Roll Forming Precision"
+                  fill
+                  sizes="300px"
+                  className="object-cover"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

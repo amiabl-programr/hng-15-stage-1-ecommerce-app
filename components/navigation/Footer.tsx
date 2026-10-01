@@ -1,163 +1,263 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
-import { HardHat, Phone, Mail, MapPin, ShieldCheck, Clock, Award } from "lucide-react";
+import {
+  HardHat,
+  Phone,
+  Mail,
+  MapPin,
+  Send,
+  CheckCircle2,
+  CreditCard,
+  Truck,
+  ShieldCheck,
+  Check,
+} from "lucide-react";
 
 export function Footer() {
+  const [email, setEmail] = useState("");
+  const [agreed, setAgreed] = useState(true);
+  const [subscribed, setSubscribed] = useState(false);
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email && agreed) {
+      setSubscribed(true);
+    }
+  };
+
   return (
-    <footer className="bg-slate-950 text-slate-400 border-t border-slate-800">
-      {/* Value Badges Banner */}
-      <div className="border-b border-slate-800/80 bg-slate-900/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 shrink-0">
-              <ShieldCheck className="w-6 h-6" />
+    <footer className="bg-slate-50 border-t border-slate-200 text-slate-600">
+      {/* 1. Newsletter Subscription Section (Exact Plumbix Style) */}
+      <div className="border-b border-slate-200 bg-white py-14">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 border border-blue-100 shadow-xs">
+            <Mail className="w-6 h-6" />
+          </div>
+
+          <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight">
+            Subscribe To Our Newsletter
+          </h3>
+          <p className="text-sm text-slate-500 mt-2 max-w-xl mx-auto">
+            Subscribe to our technical bulletin to receive factory price updates, architectural coil discounts, and fabrication news.
+          </p>
+
+          {subscribed ? (
+            <div className="mt-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl inline-flex items-center gap-2 text-sm font-semibold">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+              <span>Thank you for subscribing! We've sent a confirmation to your email.</span>
             </div>
-            <div>
-              <h4 className="text-white font-semibold text-sm">Certified Heavy Gauge</h4>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Precision micrometer-tested coils ranging from 0.45mm to 0.65mm.
+          ) : (
+            <form onSubmit={handleSubscribe} className="mt-6 max-w-xl mx-auto">
+              <div className="flex flex-col sm:flex-row items-center gap-2">
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Your email address..."
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white transition-all"
+                />
+                <button
+                  type="submit"
+                  className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs uppercase tracking-wider px-8 py-3.5 rounded-lg transition-colors whitespace-nowrap shadow-sm"
+                >
+                  Subscribe
+                </button>
+              </div>
+
+              <div className="mt-3 flex items-center justify-center gap-2 text-xs text-slate-400">
+                <input
+                  type="checkbox"
+                  id="newsletter-agree"
+                  checked={agreed}
+                  onChange={(e) => setAgreed(e.target.checked)}
+                  className="w-3.5 h-3.5 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
+                />
+                <label htmlFor="newsletter-agree" className="cursor-pointer">
+                  I agree to the terms, conditions, and privacy policy
+                </label>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+
+      {/* 2. Main 4-Column Footer */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+          {/* Column 1: About Information */}
+          <div className="space-y-4">
+            <h4 className="text-slate-900 font-extrabold text-sm uppercase tracking-wider">
+              About Information
+            </h4>
+            <div className="text-xs text-slate-500 space-y-2.5 leading-relaxed">
+              <p className="font-semibold text-slate-800">Roofix Industrial Materials Ltd.</p>
+              <p>Plot 18, Commercial Industrial Estate, Ikeja Expressway, Lagos State, Nigeria.</p>
+              <p>
+                <span className="font-semibold text-slate-700">Call Us:</span> +234 (0) 800-766-3490
               </p>
+              <p>
+                <span className="font-semibold text-slate-700">Email:</span> orders@roofixmaterials.com
+              </p>
+            </div>
+            <div className="pt-2 flex items-center gap-2 text-xs text-slate-400">
+              <Truck className="w-4 h-4 text-blue-600" />
+              <span>Direct factory dispatch to all 36 states</span>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 shrink-0">
-              <Clock className="w-6 h-6" />
-            </div>
-            <div>
-              <h4 className="text-white font-semibold text-sm">Express Site Roll Forming</h4>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Mobile extrusion rigs delivering continuous longspan panels directly on-site.
-              </p>
-            </div>
+
+          {/* Column 2: Products */}
+          <div className="space-y-4">
+            <h4 className="text-slate-900 font-extrabold text-sm uppercase tracking-wider">
+              Products
+            </h4>
+            <ul className="space-y-2.5 text-xs text-slate-500">
+              <li>
+                <Link href="/products?category=roofing-sheets" className="hover:text-blue-600 transition-colors">
+                  Longspan Aluminium Sheets
+                </Link>
+              </li>
+              <li>
+                <Link href="/products?category=metcopo-roofing" className="hover:text-blue-600 transition-colors">
+                  Metcopo Steptile Profiles
+                </Link>
+              </li>
+              <li>
+                <Link href="/products?category=shingles" className="hover:text-blue-600 transition-colors">
+                  Stone Coated Roofing Shingles
+                </Link>
+              </li>
+              <li>
+                <Link href="/products?category=step-tiles" className="hover:text-blue-600 transition-colors">
+                  Classic Roman Step Tiles
+                </Link>
+              </li>
+              <li>
+                <Link href="/products?category=corrugated-sheets" className="hover:text-blue-600 transition-colors">
+                  Corrugated Metal Panels
+                </Link>
+              </li>
+              <li>
+                <Link href="/products?category=ridge-caps" className="hover:text-blue-600 transition-colors">
+                  Ridge Caps, Trimmers & Gutters
+                </Link>
+              </li>
+              <li>
+                <Link href="/fabrication" className="hover:text-blue-600 transition-colors">
+                  Custom Sheet Bending & Roll Forming
+                </Link>
+              </li>
+            </ul>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 shrink-0">
-              <Award className="w-6 h-6" />
-            </div>
-            <div>
-              <h4 className="text-white font-semibold text-sm">25 to 50 Year Warranty</h4>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Guaranteed color retention against harsh tropical sun and coastal corrosion.
-              </p>
-            </div>
+
+          {/* Column 3: Your Account */}
+          <div className="space-y-4">
+            <h4 className="text-slate-900 font-extrabold text-sm uppercase tracking-wider">
+              Your Account
+            </h4>
+            <ul className="space-y-2.5 text-xs text-slate-500">
+              <li>
+                <Link href="/account/orders" className="hover:text-blue-600 transition-colors">
+                  Order Tracking
+                </Link>
+              </li>
+              <li>
+                <Link href="/login" className="hover:text-blue-600 transition-colors">
+                  Customer Sign In
+                </Link>
+              </li>
+              <li>
+                <Link href="/account" className="hover:text-blue-600 transition-colors">
+                  Account Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link href="/cart" className="hover:text-blue-600 transition-colors">
+                  Shopping Cart
+                </Link>
+              </li>
+              <li>
+                <Link href="/fabrication" className="hover:text-blue-600 transition-colors">
+                  Request Fabrication Quote
+                </Link>
+              </li>
+              <li>
+                <Link href="/admin" className="hover:text-blue-600 transition-colors">
+                  Operations Portal (Staff)
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 4: Our Company */}
+          <div className="space-y-4">
+            <h4 className="text-slate-900 font-extrabold text-sm uppercase tracking-wider">
+              Our Company
+            </h4>
+            <ul className="space-y-2.5 text-xs text-slate-500">
+              <li>
+                <Link href="/about" className="hover:text-blue-600 transition-colors">
+                  About Us & Factory Profile
+                </Link>
+              </li>
+              <li>
+                <Link href="/about#standards" className="hover:text-blue-600 transition-colors">
+                  Quality Standards & Certifications
+                </Link>
+              </li>
+              <li>
+                <Link href="/about#delivery" className="hover:text-blue-600 transition-colors">
+                  Haulage & Delivery Logistics
+                </Link>
+              </li>
+              <li>
+                <Link href="/about#terms" className="hover:text-blue-600 transition-colors">
+                  Terms & Conditions
+                </Link>
+              </li>
+              <li>
+                <Link href="/about#contact" className="hover:text-blue-600 transition-colors">
+                  Contact Customer Engineering
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
 
-      {/* Main Footer Links */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-          {/* Brand Info */}
-          <div className="space-y-4 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center text-slate-950 font-bold shadow-md shadow-amber-500/20">
-                <HardHat className="w-6 h-6" />
-              </div>
-              <span className="text-lg font-bold tracking-tight text-white uppercase">
-                Roofing<span className="text-amber-500">Shop</span>
-              </span>
-            </Link>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Industrial and residential architectural roofing solutions, custom corrugated sheet fabrication, and specialized CNC bending services.
-            </p>
+      {/* 3. Bottom Legal & Payment Icons Strip */}
+      <div className="border-t border-slate-200 bg-white py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+          {/* Social Links */}
+          <div className="flex items-center gap-4 text-slate-400 font-bold">
+            <span className="hover:text-blue-600 cursor-pointer transition-colors">FB</span>
+            <span className="hover:text-blue-600 cursor-pointer transition-colors">X</span>
+            <span className="hover:text-blue-600 cursor-pointer transition-colors">IG</span>
+            <span className="hover:text-blue-600 cursor-pointer transition-colors">IN</span>
+            <span className="hover:text-blue-600 cursor-pointer transition-colors">YT</span>
           </div>
 
-          {/* Product Lines */}
+          {/* Copyright */}
           <div>
-            <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">
-              Roofing Profiles
-            </h4>
-            <ul className="space-y-2.5 text-sm">
-              <li>
-                <Link href="/products?category=roofing-sheets" className="hover:text-amber-400 transition-colors">
-                  Longspan Aluminium
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?category=metcopo-roofing" className="hover:text-amber-400 transition-colors">
-                  Metcopo Steptile
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?category=shingles" className="hover:text-amber-400 transition-colors">
-                  Stone Coated Shingles
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?category=step-tiles" className="hover:text-amber-400 transition-colors">
-                  Classic Step Tiles
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?category=corrugated-sheets" className="hover:text-amber-400 transition-colors">
-                  Corrugated Steel Panels
-                </Link>
-              </li>
-            </ul>
+            Copyright © {new Date().getFullYear()} Roofix Materials Ltd. All Rights Reserved.
           </div>
 
-          {/* Technical Services */}
-          <div>
-            <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">
-              Services & Trimmings
-            </h4>
-            <ul className="space-y-2.5 text-sm">
-              <li>
-                <Link href="/fabrication" className="hover:text-amber-400 transition-colors">
-                  On-Site Roll Forming
-                </Link>
-              </li>
-              <li>
-                <Link href="/fabrication" className="hover:text-amber-400 transition-colors">
-                  CNC Sheet Bending & Curving
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?category=ridge-caps" className="hover:text-amber-400 transition-colors">
-                  Ridge Caps & Flashings
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?category=trimmers-and-parapets" className="hover:text-amber-400 transition-colors">
-                  Valley Gutters & Parapets
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?category=accessories" className="hover:text-amber-400 transition-colors">
-                  EPDM Fasteners & Sealants
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Direct Support */}
-          <div>
-            <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">
-              Contact & Depot
-            </h4>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-                <span>Plot 12 Industrial Layout, Materials Highway, Ikeja / Lekki Corridor</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-amber-500 shrink-0" />
-                <span>+234 800 766 3464</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-amber-500 shrink-0" />
-                <span>dispatch@roofingshop.com</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Copyright */}
-        <div className="mt-12 pt-8 border-t border-slate-900 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <p>© {new Date().getFullYear()} Roofing Construction Shop Ltd. All rights reserved.</p>
-          <div className="flex gap-6">
-            <Link href="/privacy" className="hover:text-slate-400">Privacy Policy</Link>
-            <Link href="/terms" className="hover:text-slate-400">Terms of Supply</Link>
-            <Link href="/admin" className="hover:text-amber-400">Staff Portal</Link>
+          {/* Payment Badges */}
+          <div className="flex items-center gap-2">
+            <span className="px-2 py-1 bg-slate-100 border border-slate-200 rounded text-[10px] font-bold text-slate-700">
+              VISA
+            </span>
+            <span className="px-2 py-1 bg-slate-100 border border-slate-200 rounded text-[10px] font-bold text-slate-700">
+              MASTERCARD
+            </span>
+            <span className="px-2 py-1 bg-slate-100 border border-slate-200 rounded text-[10px] font-bold text-slate-700">
+              VERVE
+            </span>
+            <span className="px-2 py-1 bg-slate-100 border border-slate-200 rounded text-[10px] font-bold text-slate-700">
+              BANK TRANSFER
+            </span>
           </div>
         </div>
       </div>
