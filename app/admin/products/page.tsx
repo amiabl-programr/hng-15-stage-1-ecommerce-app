@@ -1,8 +1,9 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatCurrency } from "@/lib/utils";
+import { pickPrimaryImage } from "@/lib/products/image-manifest";
+import { ProductImageFrame } from "@/components/products/ProductImageFrame";
 import Link from "next/link";
-import Image from "next/image";
-import { Plus, Ruler, Box, Wrench, Layers } from "lucide-react";
+import { Plus, Ruler, Box, Wrench, Layers, ImageIcon } from "lucide-react";
 
 export const metadata = {
   title: "Product Inventory | Admin Portal",
@@ -61,20 +62,20 @@ export default async function AdminProductsPage() {
             </thead>
             <tbody className="divide-y divide-slate-800">
               {productList.map((prod) => {
-                const primaryImage =
-                  prod.images?.[0]?.image_url ||
-                  "https://images.unsplash.com/photo-1620027814885-f55a1cb8b776?auto=format&fit=crop&w=200&q=80";
+                const primaryImage = pickPrimaryImage(prod.images);
+                const photoCount = prod.images?.length || 0;
 
                 return (
                   <tr key={prod.id} className="hover:bg-slate-850/50 transition-colors">
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
                         <div className="relative w-12 h-12 rounded-lg bg-slate-950 overflow-hidden shrink-0 border border-slate-800">
-                          <Image
-                            src={primaryImage}
+                          <ProductImageFrame
+                            slug={prod.slug}
                             alt={prod.name}
-                            fill
-                            className="object-cover"
+                            image={primaryImage}
+                            tone="dark"
+                            imageClassName="object-cover"
                           />
                         </div>
                         <div>
@@ -118,13 +119,22 @@ export default async function AdminProductsPage() {
                     </td>
 
                     <td className="py-4 px-6 text-right">
-                      <Link
-                        href={`/products/${prod.slug}`}
-                        target="_blank"
-                        className="text-xs font-semibold text-amber-400 hover:underline"
-                      >
-                        Preview
-                      </Link>
+                      <div className="flex items-center justify-end gap-3">
+                        <Link
+                          href={`/admin/products/${prod.id}/images`}
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-slate-300 hover:text-amber-400 transition-colors"
+                        >
+                          <ImageIcon className="w-3.5 h-3.5" />
+                          {photoCount === 0 ? "Add photo" : `${photoCount}`}
+                        </Link>
+                        <Link
+                          href={`/products/${prod.slug}`}
+                          target="_blank"
+                          className="text-xs font-semibold text-amber-400 hover:underline"
+                        >
+                          Preview
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 );
