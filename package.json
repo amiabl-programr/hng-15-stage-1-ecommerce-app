@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "eslint",
     "db:seed": "tsx scripts/seed.ts",
-    "db:reset": "tsx scripts/reset-db.ts"
+    "db:reset": "tsx scripts/reset-db.ts",
+    "assets:register": "tsx scripts/generate-asset-register.ts",
+    "assets:preview": "tsx scripts/preview-profiles.tsx",
+    "assets:check": "tsx scripts/check-profile-geometry.tsx"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
