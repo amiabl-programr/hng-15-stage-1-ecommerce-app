@@ -43,3 +43,10 @@ next-env.d.ts
 
 # generated asset previews
 /docs/preview/
+
+# supabase cli scratch (project ref, cached versions)
+/supabase/.temp/
+
+# connection strings written to disk by local tooling
+*.dburl*.tmp
+.dburl*.tmp

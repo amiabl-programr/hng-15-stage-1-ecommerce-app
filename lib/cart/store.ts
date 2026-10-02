@@ -146,6 +146,16 @@ export const useCartStore = create<CartStore>()(
     {
       name: "roofing_construction_cart",
       storage: createJSONStorage(() => localStorage),
+      version: 2,
+      // Product and variant IDs are now real UUIDs from Supabase. Carts saved
+      // while the catalogue was served from hardcoded fallbacks reference IDs
+      // that do not exist in the database, so every checkout rejected them with
+      // "Invalid product ID format". Dropping those carts is correct: the prices
+      // and totals they display are also stale.
+      migrate: (persisted, version) => {
+        if (version !== 2) return { items: [], isHydrated: false } as unknown as CartStore;
+        return persisted as CartStore;
+      },
       onRehydrateStorage: () => (state) => {
         state?.setHydrated(true);
       },

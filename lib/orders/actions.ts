@@ -19,6 +19,12 @@ export async function createOrderAction(rawPayload: CreateOrderPayload): Promise
   const parseResult = createOrderSchema.safeParse(rawPayload);
   if (!parseResult.success) {
     const errorDetails = parseResult.error.issues.map((i) => i.message).join(", ");
+    // Log the rejected field paths only. Never log rawPayload: the customer
+    // object carries email, phone and street address.
+    console.error(
+      "[Order Validation] Rejected payload:",
+      parseResult.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "),
+    );
     return { success: false, error: `Invalid order details: ${errorDetails}` };
   }
 
@@ -185,30 +191,35 @@ export async function createOrderAction(rawPayload: CreateOrderPayload): Promise
       .select();
 
     if (itemsInsertErr) {
-      console.error("[Order Error] Failed creating order items.");
+      // The order row exists but its line items do not. Leaving it behind would
+      // produce an order the customer sees as confirmed, that the admin views as
+      // a real order, and that no email or invoice can itemise. Remove the empty
+      // order so the customer retries against a clean slate.
+      console.error("[Order Error] Failed creating order items, rolling back order.");
+      await adminDb.from("orders").delete().eq("id", newOrder.id);
+      return {
+        success: false,
+        error: "Failed to save your order items. No charge was made, please try again.",
+      };
     }
 
     for (const item of verifiedOrderItems) {
       if (item.variant_id) {
-        try {
-          const { error: rpcErr } = await adminDb.rpc("decrement_variant_inventory", {
-            p_variant_id: item.variant_id,
-            p_quantity: item.quantity,
-          });
-          if (rpcErr) throw rpcErr;
-        } catch {
-          const { data: currentVar } = await adminDb
-            .from("product_variants")
-            .select("stock_quantity")
-            .eq("id", item.variant_id)
-            .single();
-          if (currentVar) {
-            const nextQty = Math.max(0, currentVar.stock_quantity - item.quantity);
-            await adminDb
-              .from("product_variants")
-              .update({ stock_quantity: nextQty })
-              .eq("id", item.variant_id);
-          }
+        const { error: rpcErr } = await adminDb.rpc("decrement_variant_inventory", {
+          p_variant_id: item.variant_id,
+          p_quantity: item.quantity,
+        });
+        if (rpcErr) {
+          // The row-locking function is the only safe way to decrement. The old
+          // read-then-write fallback could oversell, because two concurrent
+          // checkouts both read the same stock before either wrote.
+          console.error("[Order Error] Inventory decrement failed:", rpcErr.message);
+          await adminDb.from("order_items").delete().eq("order_id", newOrder.id);
+          await adminDb.from("orders").delete().eq("id", newOrder.id);
+          return {
+            success: false,
+            error: "We could not confirm stock for one of your items. Please try again.",
+          };
         }
       }
     }
