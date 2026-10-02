@@ -12,6 +12,7 @@ import type { ProfileKind } from "../lib/products/image-manifest";
 const KINDS: ProfileKind[] = [
   "longspan",
   "metcoppo",
+  "step-tile",
   "corrugated",
   "shingle",
   "ridge",
@@ -25,14 +26,33 @@ const KINDS: ProfileKind[] = [
 
 const CELL = 300;
 const COLS = 4;
+// Two rows of the same tiles, so the compact rendering used by the subcategory
+// row can be reviewed next to the full one at the same glance.
+const TILE_W = 210;
+const TILE_H = 140;
+const COMPACT_ROW = CELL;
 const ROWS = Math.ceil(KINDS.length / COLS);
+
+const extract = (markup: string) =>
+  markup.slice(markup.indexOf("<svg"), markup.lastIndexOf("</svg>") + 6);
 
 const cells = KINDS.map((kind, i) => {
   const x = (i % COLS) * CELL;
   const y = Math.floor(i / COLS) * CELL;
-  const inner = renderToStaticMarkup(<ProfileDiagram kind={kind} tone="light" />);
-  const svg = inner.slice(inner.indexOf("<svg"), inner.lastIndexOf("</svg>") + 6);
-  return `<g transform="translate(${x},${y})"><rect width="${CELL}" height="${CELL}" fill="#f1f5f9"/>${svg}</g>`;
+  const full = extract(renderToStaticMarkup(<ProfileDiagram kind={kind} tone="light" />));
+  const compact = extract(
+    renderToStaticMarkup(<ProfileDiagram kind={kind} tone="light" compact />),
+  );
+  // The subcategory tile matches the drawing's own ratio, so the preview scales
+  // uniformly rather than distorting the cross-sections.
+  const k = Math.min(TILE_W / 360, TILE_H / 200);
+  const dw = 360 * k;
+  const dh = 200 * k;
+  const tile = `<g transform="translate(${x + (CELL - TILE_W) / 2},${y + (CELL - COMPACT_ROW - TILE_H) / 2})">
+      <rect width="${TILE_W}" height="${TILE_H}" fill="#ffffff" stroke="#cbd5e1"/>
+      <g transform="translate(${(TILE_W - dw) / 2},${(TILE_H - dh) / 2}) scale(${k})">${compact}</g>
+    </g>`;
+  return `<g transform="translate(${x},${y})"><rect width="${CELL}" height="${CELL}" fill="#f1f5f9"/>${full}${tile}</g>`;
 }).join("");
 
 const hero = renderToStaticMarkup(<HeroProfileSheet />);

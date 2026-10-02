@@ -20,6 +20,7 @@ export type PermissionStatus = "own" | "approved" | "pending" | "not-required";
 export type ProfileKind =
   | "longspan"
   | "metcoppo"
+  | "step-tile"
   | "corrugated"
   | "shingle"
   | "ridge"
@@ -285,7 +286,7 @@ export const CATEGORY_IMAGE_MANIFEST: Record<string, ManifestEntry> = {
     ],
   },
   "step-tiles": {
-    kind: "metcoppo",
+    kind: "step-tile",
     label: "Step tile",
     directory: "step-tiles",
     assets: [

@@ -30,6 +30,8 @@ interface FrameProps {
   className?: string;
   /** Classes applied to the photograph only. */
   imageClassName?: string;
+  /** Forwarded to the fallback drawing. Use for small tiles. */
+  compact?: boolean;
 }
 
 export function ProductImageFrame({
@@ -66,9 +68,10 @@ export function CategoryImageFrame({
   url,
   sizes = "(max-width: 768px) 100vw, 33vw",
   tone = "dark",
+  compact = false,
   className = "",
   imageClassName = "",
-}: Omit<FrameProps, "image" | "alt" | "label"> & { alt: string; url?: string | null }) {
+}: Omit<FrameProps, "image"> & { url?: string | null }) {
   if (url) {
     return (
       <Image
@@ -81,5 +84,12 @@ export function CategoryImageFrame({
     );
   }
 
-  return <ProfileDiagram kind={resolveKind(slug).kind} tone={tone} className={className} />;
+  return (
+    <ProfileDiagram
+      kind={resolveKind(slug).kind}
+      tone={tone}
+      compact={compact}
+      className={className}
+    />
+  );
 }

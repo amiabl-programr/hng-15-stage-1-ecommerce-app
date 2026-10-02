@@ -82,6 +82,25 @@ const METCOPPO = sheet([
   [336, 152],
 ]);
 
+/**
+ * Step tile: a hard right-angle step profile with a broad flat pan between
+ * risers. Metcoppo's crest is a soft ogee with a narrow channel; step tile has a
+ * wider pan and a square shoulder. Keeping them distinguishable matters because
+ * they are separate categories with separate buyers.
+ */
+const STEP_TILE = sheet([
+  [26, 152],
+  [104, 152],
+  [112, 116],
+  [164, 116],
+  [172, 152],
+  [232, 152],
+  [240, 116],
+  [292, 116],
+  [300, 152],
+  [336, 152],
+]);
+
 const CORRUGATED = sheet(wave(24, 336, 138, 24, 52));
 
 const RIDGE_CAP =
@@ -139,72 +158,89 @@ const ROLL_FORMING_FEED = sheet([
 
 const ROLL_FORMING_OUT = sheet(wave(200, 340, 102, 13, 30));
 
-function Diagram({ kind, tone }: { kind: ProfileKind; tone: DiagramTone }) {
+function Diagram({
+  kind,
+  tone,
+  weightScale,
+}: {
+  kind: ProfileKind;
+  tone: DiagramTone;
+  weightScale: number;
+}) {
+  const w = (n: number) => n * weightScale;
   const t = TONES[tone];
 
   switch (kind) {
     case "longspan":
       return (
         <>
-          <path d={LONGSPAN} className={`${t.sheet} ${t.fill}`} strokeWidth={1.5} />
-          <path d="M30,168 L330,168" className={t.dim} strokeWidth={1} strokeDasharray="3 5" />
-          <path d="M30,163 L30,173 M330,163 L330,173" className={t.dim} strokeWidth={1} />
-          <path d="M120,84 L120,70 M120,70 L140,70 M140,70 L140,84" className={t.dim} strokeWidth={1} />
+          <path d={LONGSPAN} className={`${t.sheet} ${t.fill}`} strokeWidth={w(1.5)} />
+          <path d="M30,168 L330,168" className={t.dim} strokeWidth={w(1)} strokeDasharray="8.4 14.0" />
+          <path d="M30,163 L30,173 M330,163 L330,173" className={t.dim} strokeWidth={w(1)} />
+          <path d="M120,84 L120,70 M120,70 L140,70 M140,70 L140,84" className={t.dim} strokeWidth={w(1)} />
         </>
       );
     case "metcoppo":
       return (
         <>
-          <path d={METCOPPO} className={`${t.sheet} ${t.fill}`} strokeWidth={1.5} />
-          <path d="M26,170 L336,170" className={t.dim} strokeWidth={1} strokeDasharray="3 5" />
-          <path d="M104,106 L104,92 M104,92 L140,92 M140,92 L140,106" className={t.dim} strokeWidth={1} />
+          <path d={METCOPPO} className={`${t.sheet} ${t.fill}`} strokeWidth={w(1.5)} />
+          <path d="M26,170 L336,170" className={t.dim} strokeWidth={w(1)} strokeDasharray="8.4 14.0" />
+          <path d="M104,106 L104,92 M104,92 L140,92 M140,92 L140,106" className={t.dim} strokeWidth={w(1)} />
+        </>
+      );
+    case "step-tile":
+      return (
+        <>
+          <path d={STEP_TILE} className={`${t.sheet} ${t.fill}`} strokeWidth={w(1.5)} />
+          <path d="M26,170 L336,170" className={t.dim} strokeWidth={w(1)} strokeDasharray="8.4 14.0" />
+          <path d="M112,110 L112,96 M112,96 L152,96 M152,96 L152,110" className={t.dim} strokeWidth={w(1)} />
         </>
       );
     case "corrugated":
       return (
         <>
-          <path d={CORRUGATED} className={`${t.sheet} ${t.fill}`} strokeWidth={1.5} />
-          <path d="M24,178 L336,178" className={t.dim} strokeWidth={1} strokeDasharray="3 5" />
-          <path d="M76,102 L76,74 M76,74 L128,74 M128,74 L128,102" className={t.dim} strokeWidth={1} />
+          <path d={CORRUGATED} className={`${t.sheet} ${t.fill}`} strokeWidth={w(1.5)} />
+          <path d="M24,178 L336,178" className={t.dim} strokeWidth={w(1)} strokeDasharray="8.4 14.0" />
+          <path d="M76,102 L76,74 M76,74 L128,74 M128,74 L128,102" className={t.dim} strokeWidth={w(1)} />
         </>
       );
     case "ridge":
       return (
         <>
-          <path d={RIDGE_CAP} className={`${t.sheet} ${t.fill}`} strokeWidth={1.5} />
-          <path d="M52,178 L308,178" className={t.dim} strokeWidth={1} strokeDasharray="3 5" />
-          <path d="M180,92 L180,68 M180,68 L148,68 M148,68 L148,92" className={t.dim} strokeWidth={1} />
+          <path d={RIDGE_CAP} className={`${t.sheet} ${t.fill}`} strokeWidth={w(1.5)} />
+          <path d="M52,178 L308,178" className={t.dim} strokeWidth={w(1)} strokeDasharray="8.4 14.0" />
+          <path d="M180,92 L180,68 M180,68 L148,68 M148,68 L148,92" className={t.dim} strokeWidth={w(1)} />
         </>
       );
     case "trimmer":
       return (
         <>
-          <path d={TRIMMER} className={`${t.sheet} ${t.fill}`} strokeWidth={1.5} />
-          <path d="M100,158 L290,158" className={t.dim} strokeWidth={1} strokeDasharray="3 5" />
+          <path d={TRIMMER} className={`${t.sheet} ${t.fill}`} strokeWidth={w(1.5)} />
+          <path d="M100,158 L290,158" className={t.dim} strokeWidth={w(1)} strokeDasharray="8.4 14.0" />
         </>
       );
     case "flashing":
       return (
         <>
-          <path d={FLASHING} className={`${t.sheet} ${t.fill}`} strokeWidth={1.5} />
-          <path d="M60,142 L60,56" className={t.dim} strokeWidth={1} strokeDasharray="3 5" />
-          <path d="M52,142 L118,142 M52,137 L52,147 M112,137 L112,147" className={t.dim} strokeWidth={1} />
+          <path d={FLASHING} className={`${t.sheet} ${t.fill}`} strokeWidth={w(1.5)} />
+          <path d="M60,142 L60,56" className={t.dim} strokeWidth={w(1)} strokeDasharray="8.4 14.0" />
+          <path d="M52,142 L118,142 M52,137 L52,147 M112,137 L112,147" className={t.dim} strokeWidth={w(1)} />
         </>
       );
     case "gutter":
       return (
         <>
-          <path d={GUTTER} className={`${t.sheet} ${t.fill}`} strokeWidth={1.5} />
-          <path d="M80,154 L270,154" className={t.dim} strokeWidth={1} strokeDasharray="3 5" />
+          <path d={GUTTER} className={`${t.sheet} ${t.fill}`} strokeWidth={w(1.5)} />
+          <path d="M80,154 L270,154" className={t.dim} strokeWidth={w(1)} strokeDasharray="8.4 14.0" />
         </>
       );
     case "fastener":
       return (
         <>
-          <path d={FASTENER_HEAD} className={`${t.sheet} ${t.fill}`} strokeWidth={1.5} />
-          <path d={FASTENER_SHANK} className={`${t.sheet} ${t.fill}`} strokeWidth={1.5} />
-          <path d="M286,84 L307,86.5 L286,89 Z" className={`${t.sheet} ${t.fill}`} strokeWidth={1.5} />
-          <g className={t.sheet} strokeWidth={1}>
+          <path d={FASTENER_HEAD} className={`${t.sheet} ${t.fill}`} strokeWidth={w(1.5)} />
+          <path d={FASTENER_SHANK} className={`${t.sheet} ${t.fill}`} strokeWidth={w(1.5)} />
+          <path d="M286,84 L307,86.5 L286,89 Z" className={`${t.sheet} ${t.fill}`} strokeWidth={w(1.5)} />
+          <g className={t.sheet} strokeWidth={w(1)}>
             {threadMarks(130, 278).map(([x1, x2]) => (
               <path key={x1} d={`M${x1},84 L${x2},89`} />
             ))}
@@ -214,19 +250,19 @@ function Diagram({ kind, tone }: { kind: ProfileKind; tone: DiagramTone }) {
     case "shingle":
       return (
         <>
-          <path d={SHINGLE_COURSES} className={`${t.sheet} ${t.fill}`} strokeWidth={1.4} />
-          <circle cx={180} cy={72} r={6} className={t.dim} strokeWidth={1.4} fill="none" />
+          <path d={SHINGLE_COURSES} className={`${t.sheet} ${t.fill}`} strokeWidth={w(1.4)} />
+          <circle cx={180} cy={72} r={6} className={t.dim} strokeWidth={w(1.4)} fill="none" />
         </>
       );
     case "roll-forming":
       return (
         <>
-          <circle cx={60} cy={104} r={36} className={`${t.sheet} ${t.fill}`} strokeWidth={1.5} />
-          <circle cx={60} cy={104} r={11} className={t.dim} strokeWidth={1.4} fill="none" />
-          <circle cx={132} cy={64} r={14} className={t.dim} strokeWidth={1.4} fill="none" />
-          <circle cx={132} cy={144} r={14} className={t.dim} strokeWidth={1.4} fill="none" />
-          <path d={ROLL_FORMING_FEED} className={`${t.sheet} ${t.fill}`} strokeWidth={1.5} />
-          <path d={ROLL_FORMING_OUT} className={`${t.sheet} ${t.fill}`} strokeWidth={1.5} />
+          <circle cx={60} cy={104} r={36} className={`${t.sheet} ${t.fill}`} strokeWidth={w(1.5)} />
+          <circle cx={60} cy={104} r={11} className={t.dim} strokeWidth={w(1.4)} fill="none" />
+          <circle cx={132} cy={64} r={14} className={t.dim} strokeWidth={w(1.4)} fill="none" />
+          <circle cx={132} cy={144} r={14} className={t.dim} strokeWidth={w(1.4)} fill="none" />
+          <path d={ROLL_FORMING_FEED} className={`${t.sheet} ${t.fill}`} strokeWidth={w(1.5)} />
+          <path d={ROLL_FORMING_OUT} className={`${t.sheet} ${t.fill}`} strokeWidth={w(1.5)} />
         </>
       );
     case "bending":
@@ -235,12 +271,12 @@ function Diagram({ kind, tone }: { kind: ProfileKind; tone: DiagramTone }) {
           <path
             d="M104,186 L178,140 L252,186 Z"
             className={t.dim}
-            strokeWidth={1.4}
+            strokeWidth={w(1.4)}
             fill="none"
           />
-          <path d="M40,150 L146,150 L206,118 L336,118" className={`${t.sheet} ${t.fill}`} strokeWidth={1.5} />
-          <path d="M134,58 L226,58 L212,100 L148,100 Z" className={`${t.sheet} ${t.fill}`} strokeWidth={1.5} />
-          <path d="M176,108 L176,140" className={t.dim} strokeWidth={1} strokeDasharray="3 4" />
+          <path d="M40,150 L146,150 L206,118 L336,118" className={`${t.sheet} ${t.fill}`} strokeWidth={w(1.5)} />
+          <path d="M134,58 L226,58 L212,100 L148,100 Z" className={`${t.sheet} ${t.fill}`} strokeWidth={w(1.5)} />
+          <path d="M176,108 L176,140" className={t.dim} strokeWidth={w(1)} strokeDasharray="8.4 11.2" />
         </>
       );
     default:
@@ -255,6 +291,7 @@ function Diagram({ kind, tone }: { kind: ProfileKind; tone: DiagramTone }) {
 const CAPTIONS: Record<ProfileKind, string> = {
   longspan: "longspan cross-section",
   metcoppo: "metcoppo cross-section",
+  "step-tile": "step tile cross-section",
   corrugated: "corrugation cross-section",
   shingle: "shingle course section",
   ridge: "ridge cap cross-section",
@@ -266,19 +303,38 @@ const CAPTIONS: Record<ProfileKind, string> = {
   bending: "press brake bending, side elevation",
 };
 
+/**
+ * Stroke weights are authored for the 360x200 viewBox. In compact mode the same
+ * artwork is rendered into a tile roughly a third of the size, so strokes and
+ * dashes scale up to stay legible instead of thinning into noise.
+ */
+const COMPACT_SCALE = 2.8;
+
 export interface ProfileDiagramProps {
   kind: ProfileKind;
   tone?: DiagramTone;
+  /**
+   * Drops the caption and background grid and thickens the strokes, for small
+   * tiles such as the subcategory row where the label already sits underneath.
+   */
+  compact?: boolean;
   className?: string;
 }
 
-export function ProfileDiagram({ kind, tone = "light", className = "" }: ProfileDiagramProps) {
+export function ProfileDiagram({
+  kind,
+  tone = "light",
+  compact = false,
+  className = "",
+}: ProfileDiagramProps) {
   const t = TONES[tone];
   const caption = CAPTIONS[kind];
 
   return (
     <div
-      className={`flex h-full w-full flex-col items-center justify-center gap-3 p-4 ${t.bg} ${className}`}
+      className={`flex h-full w-full flex-col items-center justify-center ${
+        compact ? "p-2" : "gap-3 p-4"
+      } ${t.bg} ${className}`}
     >
       <svg
         viewBox="0 0 360 200"
@@ -287,16 +343,20 @@ export function ProfileDiagram({ kind, tone = "light", className = "" }: Profile
         role="img"
         aria-label={`Schematic drawing: ${caption}`}
       >
-        <g className={`${t.grid} opacity-70`} strokeWidth={0.5}>
-          <path d="M0,50 L360,50 M0,100 L360,100 M0,150 L360,150" />
-        </g>
+        {!compact && (
+          <g className={`${t.grid} opacity-70`} strokeWidth={0.5}>
+            <path d="M0,50 L360,50 M0,100 L360,100 M0,150 L360,150" />
+          </g>
+        )}
         <g strokeLinejoin="round" strokeLinecap="round">
-          <Diagram kind={kind} tone={tone} />
+          <Diagram kind={kind} tone={tone} weightScale={compact ? COMPACT_SCALE : 1} />
         </g>
       </svg>
-      <p className={`text-[10px] font-semibold uppercase tracking-widest ${t.label}`}>
-        {caption}
-      </p>
+      {!compact && (
+        <p className={`text-[10px] font-semibold uppercase tracking-widest ${t.label}`}>
+          {caption}
+        </p>
+      )}
     </div>
   );
 }

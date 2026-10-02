@@ -1,9 +1,7 @@
 import Link from "next/link";
 import { getAllProducts, getCategories } from "@/lib/products/queries";
 import { CatalogViewSwitcher } from "@/components/products/CatalogViewSwitcher";
-import {
-  CategoryImageFrame,
-} from "@/components/products/ProductImageFrame";
+import { CategoryImageFrame } from "@/components/products/ProductImageFrame";
 import { ProfileDiagram } from "@/components/products/ProfileDiagram";
 import {
   Search,
@@ -98,20 +96,21 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                 <Link
                   key={cat.id}
                   href={isSelected ? "/products" : `/products?category=${cat.slug}`}
-                  className={`p-3.5 rounded-xl border text-center transition-all flex flex-col items-center justify-center gap-2 group ${
+                  className={`p-3 rounded-xl border text-center transition-all flex flex-col gap-2.5 group ${
                     isSelected
                       ? "border-blue-600 bg-blue-50/50 shadow-xs ring-1 ring-blue-600"
                       : "border-slate-200 bg-white hover:border-blue-400 hover:shadow-xs"
                   }`}
                 >
-                  <div className="relative w-12 h-12 rounded-lg bg-slate-100 overflow-hidden shrink-0">
+                  <div className="relative w-full aspect-[3/2] rounded-lg bg-slate-100 overflow-hidden shrink-0 border border-slate-200/70">
                     <CategoryImageFrame
                       slug={cat.slug}
                       alt={cat.name}
                       url={cat.image_url}
-                      sizes="48px"
+                      sizes="(max-width: 640px) 45vw, (max-width: 1024px) 22vw, 16vw"
                       tone="light"
-                      imageClassName="object-cover group-hover:scale-105 transition-transform"
+                      compact
+                      imageClassName="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                   <span className="text-xs font-bold text-slate-800 group-hover:text-blue-600 transition-colors line-clamp-1">
