@@ -276,7 +276,10 @@ export function Navbar() {
               <div className="relative">
                 <ShoppingBag className="w-5 h-5 text-slate-700 group-hover:text-blue-600 transition-colors" />
                 {itemCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-blue-600 text-white font-extrabold text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                  <span
+                    key={itemCount}
+                    className="cart-badge-pop absolute -top-2 -right-2 bg-blue-600 text-white font-extrabold text-[10px] w-4 h-4 rounded-full flex items-center justify-center"
+                  >
                     {itemCount}
                   </span>
                 )}

@@ -13,14 +13,140 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom smooth transitions for e-commerce hover interactions */
+/* ─── Keyframes ──────────────────────────────────────────────────── */
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slide-right {
+  from { opacity: 0; transform: translateX(10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.35); }
+  70%  { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+/* ─── Hero entrance — staggered ─────────────────────────────────── */
+
+.hero-animate > * {
+  opacity: 0;
+  animation: fade-up 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.hero-animate > *:nth-child(1) { animation-delay: 0.05s; }
+.hero-animate > *:nth-child(2) { animation-delay: 0.18s; }
+.hero-animate > *:nth-child(3) { animation-delay: 0.30s; }
+.hero-animate > *:nth-child(4) { animation-delay: 0.42s; }
+
+/* ─── Scroll reveal ──────────────────────────────────────────────── */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger children inside a reveal parent */
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-stagger.in-view > *:nth-child(1) { opacity: 1; transform: none; transition-delay: 0.00s; }
+.reveal-stagger.in-view > *:nth-child(2) { opacity: 1; transform: none; transition-delay: 0.08s; }
+.reveal-stagger.in-view > *:nth-child(3) { opacity: 1; transform: none; transition-delay: 0.16s; }
+.reveal-stagger.in-view > *:nth-child(4) { opacity: 1; transform: none; transition-delay: 0.24s; }
+.reveal-stagger.in-view > *:nth-child(5) { opacity: 1; transform: none; transition-delay: 0.32s; }
+.reveal-stagger.in-view > *:nth-child(6) { opacity: 1; transform: none; transition-delay: 0.40s; }
+
+/* ─── Product card ───────────────────────────────────────────────── */
+
 .product-card-shadow {
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              transform   0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s ease;
 }
 
 .product-card-shadow:hover {
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -6px rgba(37, 99, 235, 0.12), 0 6px 10px -4px rgba(0, 0, 0, 0.06);
+  transform: translateY(-3px);
 }
 
+/* Quick-view button slides in from the right */
+.card-action {
+  opacity: 0;
+  transform: translateX(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.group:hover .card-action {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ─── Cart badge pop ─────────────────────────────────────────────── */
+
+.cart-badge-pop {
+  animation: pop 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* ─── CTA button press ───────────────────────────────────────────── */
+
+.btn-press {
+  transition: transform 0.12s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-press:active {
+  transform: scale(0.96);
+}
+
+/* ─── Promo banner shimmer on hover ──────────────────────────────── */
+
+.promo-shimmer {
+  background-size: 200% auto;
+  transition: background-position 0.6s ease;
+}
+
+.promo-shimmer:hover {
+  background-position: right center;
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-animate > *,
+  .reveal,
+  .reveal-stagger > *,
+  .card-action,
+  .product-card-shadow {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
