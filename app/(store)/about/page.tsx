@@ -1,6 +1,6 @@
 import Link from "next/link";
-import Image from "next/image";
 import { AboutTabsAndAccordion } from "@/components/about/AboutTabsAndAccordion";
+import { HeroProfileSheet } from "@/components/ui/HeroProfileSheet";
 import {
   ChevronRight,
   CheckSquare,
@@ -84,14 +84,8 @@ export default function AboutPage() {
 
         {/* 4. Dark Stats Banner (Image 3 Stats Strip) */}
         <section className="relative rounded-2xl overflow-hidden bg-slate-900 text-white p-12 lg:p-16 shadow-xl">
-          <div className="absolute inset-0 opacity-20">
-            <Image
-              src="https://images.unsplash.com/photo-1541888946425-d0fbb1861564?auto=format&fit=crop&w=1600&q=80"
-              alt="Engineering Site"
-              fill
-              sizes="100vw"
-              className="object-cover"
-            />
+          <div className="absolute inset-0 opacity-25 flex items-center" aria-hidden="true">
+            <HeroProfileSheet className="w-full h-full" />
           </div>
 
           <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">

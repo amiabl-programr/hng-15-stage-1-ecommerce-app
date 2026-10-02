@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Product } from "@/types/database";
 import { formatCurrency } from "@/lib/utils";
 import { useCartStore } from "@/lib/cart/store";
+import { pickPrimaryImage } from "@/lib/products/image-manifest";
+import { ProductImageFrame } from "@/components/products/ProductImageFrame";
 import { Star, ShoppingBag, Ruler, Eye, Check } from "lucide-react";
 
 interface ProductCardProps {
@@ -24,10 +25,7 @@ export function ProductCard({
   const [added, setAdded] = useState(false);
   const addItem = useCartStore((state) => state.addItem);
 
-  const primaryImage =
-    product.images?.find((img) => img.is_primary)?.image_url ||
-    product.images?.[0]?.image_url ||
-    "https://images.unsplash.com/photo-1620027814885-f55a1cb8b776?auto=format&fit=crop&w=800&q=80";
+  const primaryImage = pickPrimaryImage(product.images);
 
   // Calculate strike-through original price if discount is present
   const originalPrice = discountPercent
@@ -58,7 +56,7 @@ export function ProductCard({
       variantName: primaryVariant?.name,
       variantAttributes: primaryVariant?.attributes,
       quantity: 1, // Exactly 1 item for items that can be bought individually
-      imageUrl: primaryImage,
+      imageUrl: primaryImage?.image_url,
     });
 
     setAdded(true);
@@ -66,16 +64,15 @@ export function ProductCard({
   };
 
   return (
-    <div className="group bg-white border border-slate-200/90 rounded-xl overflow-hidden hover:border-blue-500 hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
+    <div className="product-card-shadow group bg-white border border-slate-200/90 rounded-xl overflow-hidden hover:border-blue-500 flex flex-col justify-between">
       {/* 1. Image Container with Badges */}
       <div className="relative aspect-square w-full bg-slate-50 overflow-hidden flex items-center justify-center p-4">
         <Link href={`/products/${product.slug}`} className="relative w-full h-full block">
-          <Image
-            src={primaryImage}
+          <ProductImageFrame
+            slug={product.slug}
             alt={product.name}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            className="object-cover object-center rounded-lg group-hover:scale-105 transition-transform duration-500"
+            image={primaryImage}
+            imageClassName="object-cover object-center group-hover:scale-105 transition-transform duration-500"
           />
         </Link>
 
@@ -103,11 +100,11 @@ export function ProductCard({
           )}
         </div>
 
-        {/* Hover Quick Actions (Slide in on hover) */}
-        <div className="absolute top-3 right-3 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+        {/* Hover Quick Action (slides in from right) */}
+        <div className="absolute top-3 right-3 flex flex-col gap-1.5 z-10">
           <Link
             href={`/products/${product.slug}`}
-            className="w-8 h-8 rounded-full bg-white text-slate-700 hover:text-blue-600 shadow-md flex items-center justify-center transition-colors"
+            className="card-action w-8 h-8 rounded-full bg-white text-slate-700 hover:text-blue-600 shadow-md flex items-center justify-center"
             title="Quick View"
           >
             <Eye className="w-4 h-4" />
@@ -167,7 +164,7 @@ export function ProductCard({
           {isDimensioned ? (
             <Link
               href={`/products/${product.slug}`}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs uppercase tracking-wider py-2.5 px-3 rounded-lg flex items-center justify-center gap-1.5 transition-colors shadow-xs group-hover:bg-blue-700"
+              className="btn-press w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs uppercase tracking-wider py-2.5 px-3 rounded-lg flex items-center justify-center gap-1.5 shadow-xs"
             >
               <Ruler className="w-3.5 h-3.5" />
               <span>Configure Cuts</span>
@@ -176,10 +173,10 @@ export function ProductCard({
             <button
               type="button"
               onClick={handleQuickAddToCart}
-              className={`w-full font-extrabold text-xs uppercase tracking-wider py-2.5 px-3 rounded-lg flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer ${
+              className={`btn-press w-full font-extrabold text-xs uppercase tracking-wider py-2.5 px-3 rounded-lg flex items-center justify-center gap-1.5 shadow-xs cursor-pointer ${
                 added
                   ? "bg-emerald-600 text-white shadow-emerald-600/20"
-                  : "bg-blue-600 hover:bg-blue-700 text-white active:scale-[0.98]"
+                  : "bg-blue-600 hover:bg-blue-700 text-white"
               }`}
             >
               {added ? (

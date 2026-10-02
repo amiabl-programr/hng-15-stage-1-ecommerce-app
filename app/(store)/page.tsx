@@ -1,21 +1,18 @@
 import Link from "next/link";
-import Image from "next/image";
 import { getFeaturedProducts, getCategories } from "@/lib/products/queries";
 import { ProductCard } from "@/components/products/ProductCard";
+import { ProfileDiagram } from "@/components/products/ProfileDiagram";
+import { HeroProfileSheet } from "@/components/ui/HeroProfileSheet";
 import { ProductTabsShowcase } from "@/components/products/ProductTabsShowcase";
 import { CountdownTimer } from "@/components/products/CountdownTimer";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import {
   ShieldCheck,
   Truck,
-  Wrench,
-  Clock,
   ArrowRight,
-  Sparkles,
   PhoneCall,
   CheckCircle2,
-  Play,
   Star,
-  BookOpen,
   Award,
 } from "lucide-react";
 
@@ -33,48 +30,36 @@ export default async function HomePage() {
 
   return (
     <div className="space-y-16 pb-16">
-      {/* 1. Hero Section (Image 5 Style) */}
+      {/* 1. Hero Section — Centred */}
       <section className="relative overflow-hidden bg-slate-900 text-white">
-        {/* Background Image with Dark Vignette */}
-        <div className="absolute inset-0 z-0 opacity-40">
-          <Image
-            src="https://images.unsplash.com/photo-1541888946425-d0fbb1861564?auto=format&fit=crop&w=2000&q=80"
-            alt="Architectural Roofing Structure"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent" />
+        {/* Continuous longspan profile drawn behind the headline */}
+        <div className="absolute inset-0 z-0 flex items-center" aria-hidden="true">
+          <HeroProfileSheet className="w-full h-full" />
         </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/50 to-slate-950/85" />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
-          <div className="max-w-2xl space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-600/30 border border-blue-400/40 text-blue-300 text-xs font-bold tracking-wider uppercase">
-              <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-              <span>Hot Item • Certified Structural Aluminium</span>
-            </div>
-
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-36 text-center">
+          <div className="hero-animate space-y-6">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] uppercase">
               Premium Quality Stainless &{" "}
-              <span className="text-blue-500">Aluminium Roofing</span>
+              <span className="text-blue-400">Aluminium Roofing</span>
             </h1>
 
-            <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+            <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl mx-auto">
               Direct factory supply of continuous cut-to-length Longspan sheets, Metcopo profiles,
               stone-coated shingles, and mobile on-site roll-forming extrusion. Zero joint leakage.
             </p>
 
-            <div className="flex flex-wrap items-center gap-4 pt-2">
+            <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
               <Link
                 href="/products"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs uppercase tracking-wider px-8 py-3.5 rounded-lg transition-all shadow-lg shadow-blue-600/30"
+                className="btn-press bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs uppercase tracking-wider px-8 py-3.5 rounded-lg shadow-lg shadow-blue-600/30"
               >
                 Shop Catalogue
               </Link>
               <Link
                 href="/fabrication"
-                className="bg-white/10 hover:bg-white/20 text-white font-extrabold text-xs uppercase tracking-wider px-8 py-3.5 rounded-lg border border-white/20 transition-all backdrop-blur-xs"
+                className="btn-press bg-white/10 hover:bg-white/20 text-white font-extrabold text-xs uppercase tracking-wider px-8 py-3.5 rounded-lg border border-white/20 backdrop-blur-sm"
               >
                 Custom Fabrication
               </Link>
@@ -88,13 +73,7 @@ export default async function HomePage() {
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Card 1: Longspan & Metcopo */}
           <div className="group relative h-64 rounded-xl overflow-hidden shadow-sm border border-slate-200">
-            <Image
-              src="https://images.unsplash.com/photo-1620027814885-f55a1cb8b776?auto=format&fit=crop&w=800&q=80"
-              alt="Longspan Aluminium"
-              fill
-              sizes="(max-width: 768px) 100vw, 33vw"
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
-            />
+            <ProfileDiagram kind="longspan" tone="dark" className="p-8" />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent" />
             <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
               <span className="text-blue-400 text-xs font-bold uppercase tracking-widest">
@@ -118,13 +97,7 @@ export default async function HomePage() {
 
           {/* Card 2: Stone Coated Shingles */}
           <div className="group relative h-64 rounded-xl overflow-hidden shadow-sm border border-slate-200">
-            <Image
-              src="https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80"
-              alt="Stone Coated Shingles"
-              fill
-              sizes="(max-width: 768px) 100vw, 33vw"
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
-            />
+            <ProfileDiagram kind="shingle" tone="dark" className="p-8" />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent" />
             <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
               <span className="text-blue-400 text-xs font-bold uppercase tracking-widest">
@@ -148,13 +121,7 @@ export default async function HomePage() {
 
           {/* Card 3: Fabrication & Services */}
           <div className="group relative h-64 rounded-xl overflow-hidden shadow-sm border border-slate-200">
-            <Image
-              src="https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?auto=format&fit=crop&w=800&q=80"
-              alt="Bending & Fabrication"
-              fill
-              sizes="(max-width: 768px) 100vw, 33vw"
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
-            />
+            <ProfileDiagram kind="bending" tone="dark" className="p-8" />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent" />
             <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
               <span className="text-blue-400 text-xs font-bold uppercase tracking-widest">
@@ -182,40 +149,29 @@ export default async function HomePage() {
           <ProductTabsShowcase products={featuredProducts} />
         </section>
 
-        {/* 4. Precision Workshop & Video Feature Banner (Image 5 Middle) */}
+        {/* 4. Precision Workshop Feature Banner */}
         <section className="relative rounded-2xl overflow-hidden bg-slate-900 text-white p-10 lg:p-16 text-center">
-          <div className="absolute inset-0 opacity-20">
-            <Image
-              src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1600&q=80"
-              alt="Factory roll-forming line"
-              fill
-              sizes="100vw"
-              className="object-cover"
-            />
+          <div className="absolute inset-0 opacity-30 flex items-center" aria-hidden="true">
+            <HeroProfileSheet className="w-full h-full" />
           </div>
 
           <div className="relative z-10 max-w-3xl mx-auto space-y-6">
-            {/* Play Button Trigger */}
-            <div className="w-16 h-16 bg-white/10 hover:bg-white/20 border-2 border-white/40 rounded-full flex items-center justify-center mx-auto cursor-pointer transition-all hover:scale-110 shadow-lg backdrop-blur-xs">
-              <Play className="w-6 h-6 text-white fill-white ml-0.5" />
-            </div>
-
             <span className="text-blue-400 text-xs font-extrabold tracking-widest uppercase block">
               Automated Roll-Forming Rigs
             </span>
 
             <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight">
-              We Provide Precision Extrusion & On-Site Machine Forming
+              Precision Extrusion &amp; On-Site Machine Forming
             </h2>
 
             <p className="text-sm text-slate-300 leading-relaxed max-w-xl mx-auto">
-              Our automated mobile extrusion rigs manufacture continuous roofing sheets up to 30 metres directly on your construction site. No transportation transport damage, no joint seams, and zero leak probability.
+              Our automated mobile extrusion rigs manufacture continuous roofing sheets up to 30 metres directly on your construction site. No transportation damage, no joint seams, and zero leak probability.
             </p>
 
             <div className="pt-2">
               <Link
                 href="/fabrication"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs uppercase tracking-wider px-8 py-3.5 rounded-lg inline-flex items-center gap-2 transition-colors shadow-md shadow-blue-600/20"
+                className="btn-press bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs uppercase tracking-wider px-8 py-3.5 rounded-lg inline-flex items-center gap-2 shadow-md shadow-blue-600/20"
               >
                 <span>Request Workshop Quote</span>
                 <ArrowRight className="w-4 h-4" />
@@ -224,8 +180,8 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* 5. Trust Value Propositions Bar (4 Columns with Clean Line Icons) */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 py-6 border-y border-slate-200">
+        {/* 5. Trust Value Propositions Bar */}
+        <ScrollReveal stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 py-6 border-y border-slate-200">
           <div className="flex items-center gap-3.5">
             <div className="w-11 h-11 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center shrink-0 border border-blue-100">
               <Truck className="w-5 h-5" />
@@ -252,7 +208,7 @@ export default async function HomePage() {
             </div>
             <div>
               <h4 className="text-xs font-black text-slate-900 uppercase">25-Year Warranty</h4>
-              <p className="text-[11px] text-slate-500 mt-0.5">Anti-corrosion & UV color retention guarantee</p>
+              <p className="text-[11px] text-slate-500 mt-0.5">Anti-corrosion &amp; UV color retention guarantee</p>
             </div>
           </div>
 
@@ -265,7 +221,7 @@ export default async function HomePage() {
               <p className="text-[11px] text-slate-500 mt-0.5">Instant bill of quantities calculation</p>
             </div>
           </div>
-        </section>
+        </ScrollReveal>
 
         {/* 6. Deal of the Week (Image 5 Section with Countdown Timers) */}
         <section className="space-y-6">
@@ -302,13 +258,7 @@ export default async function HomePage() {
         {/* 7. Split Editorial Showcase (Image 5 Two-Column Highlight) */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center bg-slate-50 p-8 sm:p-12 rounded-2xl border border-slate-200">
           <div className="relative aspect-[4/3] w-full rounded-xl overflow-hidden shadow-md">
-            <Image
-              src="https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=1000&q=80"
-              alt="Engineered Roofing Project"
-              fill
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover"
-            />
+            <ProfileDiagram kind="metcoppo" tone="light" className="border border-slate-200" />
           </div>
 
           <div className="space-y-5">
@@ -414,88 +364,6 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* 10. From The Journal / Technical Guides (Image 5) */}
-        <section className="space-y-8">
-          <div className="text-center max-w-xl mx-auto space-y-2">
-            <span className="text-xs font-extrabold text-blue-600 uppercase tracking-widest">
-              From The Journal
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 uppercase tracking-tight">
-              Roofing Guides & Insights
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow">
-              <div className="relative aspect-[16/10] w-full bg-slate-100">
-                <Image
-                  src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80"
-                  alt="Roofing Sheet Calculations"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover"
-                />
-              </div>
-              <div className="p-5 space-y-2">
-                <span className="text-[10px] text-blue-600 font-extrabold uppercase">
-                  Technical Guide • October 2026
-                </span>
-                <h3 className="font-bold text-slate-900 text-sm hover:text-blue-600 transition-colors line-clamp-2">
-                  How To Calculate Exact Roofing Sheet Coverage & Eliminate Cut Waste
-                </h3>
-                <p className="text-xs text-slate-500 line-clamp-2">
-                  A step-by-step quantity surveying guide on measuring rafter pitch, effective width, and linear run requirements.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow">
-              <div className="relative aspect-[16/10] w-full bg-slate-100">
-                <Image
-                  src="https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80"
-                  alt="Aluminium vs Shingles"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover"
-                />
-              </div>
-              <div className="p-5 space-y-2">
-                <span className="text-[10px] text-blue-600 font-extrabold uppercase">
-                  Material Comparison • October 2026
-                </span>
-                <h3 className="font-bold text-slate-900 text-sm hover:text-blue-600 transition-colors line-clamp-2">
-                  Aluminium vs. Stone-Coated Shingles: Which Profile Fits Your Roof?
-                </h3>
-                <p className="text-xs text-slate-500 line-clamp-2">
-                  Analyzing lifespan, acoustic dampening, deadweight load on timber trusses, and tropical sun resilience.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow">
-              <div className="relative aspect-[16/10] w-full bg-slate-100">
-                <Image
-                  src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
-                  alt="Ridge Caps and Flashings"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover"
-                />
-              </div>
-              <div className="p-5 space-y-2">
-                <span className="text-[10px] text-blue-600 font-extrabold uppercase">
-                  Installation Standard • October 2026
-                </span>
-                <h3 className="font-bold text-slate-900 text-sm hover:text-blue-600 transition-colors line-clamp-2">
-                  Preventing Ridge Cap Leaks: Flashing & Drip Edge Best Practices
-                </h3>
-                <p className="text-xs text-slate-500 line-clamp-2">
-                  Why proper lap alignment and EPDM self-drilling fasteners prevent storm uplift and wind-driven water ingress.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* 11. Manufacturer / Certification Brand Logos (Image 5 Bottom Logos) */}
         <section className="py-6 border-t border-slate-200">

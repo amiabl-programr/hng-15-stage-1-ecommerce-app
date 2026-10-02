@@ -20,17 +20,17 @@ CASCADE;
 -- 2. Seed Fresh Categories
 INSERT INTO public.categories (name, slug, description, image_url, display_order, is_active)
 VALUES
-    ('Roofing Sheets', 'roofing-sheets', 'Industrial & residential longspan aluminium sheets available in custom lengths.', 'https://images.unsplash.com/photo-1620027814885-f55a1cb8b776?auto=format&fit=crop&w=800&q=80', 1, true),
-    ('Metcopo Roofing', 'metcopo-roofing', 'Classic European clay tile aesthetics engineered in high-tensile aluzinc steel.', 'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=800&q=80', 2, true),
-    ('Step Tiles', 'step-tiles', 'Stepped architectural panels with anti-fade exterior resin finishes.', 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80', 3, true),
-    ('Roofing Shingles', 'shingles', 'Multi-layered volcanic basalt stone-coated asphalt tiles for luxury roofs.', 'https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80', 4, true),
-    ('Ridge Caps & Apex', 'ridge-caps', 'Heavy gauge apex caps to seal junctions against driving rainfall.', 'https://images.unsplash.com/photo-1541888946425-d0fbb1861564?auto=format&fit=crop&w=800&q=80', 5, true),
-    ('Trimmers & Gutters', 'trimmers-and-parapets', 'Valley gutters, flashing trimmers, and parapet perimeter wall copings.', 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80', 6, true),
-    ('Parapets & Flashing', 'parapets', 'Double drip edge architectural wall cappings for firewall perimeters.', 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=800&q=80', 7, true),
-    ('Corrugated Sheets', 'corrugated-sheets', 'Traditional heavy-gauge sinusoidal steel sheets for industrial structures.', 'https://images.unsplash.com/photo-1533750349088-cd871a92f312?auto=format&fit=crop&w=800&q=80', 8, true),
-    ('Roll Forming Services', 'roll-forming', 'Computerized on-site continuous roll forming rigs up to 30 metres unbroken.', 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80', 9, true),
-    ('Bending & Fabrication', 'bending-services', 'CNC press brake metal folding, arch curving, and bespoke trims.', 'https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?auto=format&fit=crop&w=800&q=80', 10, true),
-    ('Accessories & Fasteners', 'accessories', 'EPDM self-drilling hex fasteners, butyl waterproof tapes, and sealants.', 'https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?auto=format&fit=crop&w=800&q=80', 11, true);
+    ('Roofing Sheets', 'roofing-sheets', 'Industrial & residential longspan aluminium sheets available in custom lengths.', NULL, 1, true),
+    ('Metcopo Roofing', 'metcopo-roofing', 'Classic European clay tile aesthetics engineered in high-tensile aluzinc steel.', NULL, 2, true),
+    ('Step Tiles', 'step-tiles', 'Stepped architectural panels with anti-fade exterior resin finishes.', NULL, 3, true),
+    ('Roofing Shingles', 'shingles', 'Multi-layered volcanic basalt stone-coated asphalt tiles for luxury roofs.', NULL, 4, true),
+    ('Ridge Caps & Apex', 'ridge-caps', 'Heavy gauge apex caps to seal junctions against driving rainfall.', NULL, 5, true),
+    ('Trimmers & Gutters', 'trimmers-and-parapets', 'Valley gutters, flashing trimmers, and parapet perimeter wall copings.', NULL, 6, true),
+    ('Parapets & Flashing', 'parapets', 'Double drip edge architectural wall cappings for firewall perimeters.', NULL, 7, true),
+    ('Corrugated Sheets', 'corrugated-sheets', 'Traditional heavy-gauge sinusoidal steel sheets for industrial structures.', NULL, 8, true),
+    ('Roll Forming Services', 'roll-forming', 'Computerized on-site continuous roll forming rigs up to 30 metres unbroken.', NULL, 9, true),
+    ('Bending & Fabrication', 'bending-services', 'CNC press brake metal folding, arch curving, and bespoke trims.', NULL, 10, true),
+    ('Accessories & Fasteners', 'accessories', 'EPDM self-drilling hex fasteners, butyl waterproof tapes, and sealants.', NULL, 11, true);
 
 -- 3. Seed Fresh Products
 INSERT INTO public.products (category_id, name, slug, description, short_description, product_type, base_price, unit, min_order_quantity, is_active, is_featured, specifications)
@@ -112,15 +112,11 @@ VALUES
     ((SELECT id FROM public.products WHERE slug = 'stone-coated-shake-shingle-tile'), 'Spanish Coffee Brown', 'SH-ST-BRN', 5400.00, '{"colour": "Coffee Brown", "finish": "Stone-Coated"}'::jsonb, 720, true);
 
 -- 5. Seed Product Images
-INSERT INTO public.product_images (product_id, image_url, alt_text, display_order, is_primary)
-VALUES
-    ((SELECT id FROM public.products WHERE slug = 'premium-longspan-aluminium-roofing-sheet'), 'https://images.unsplash.com/photo-1620027814885-f55a1cb8b776?auto=format&fit=crop&w=1200&q=80', 'Longspan Aluminium Sheets', 1, true),
-    ((SELECT id FROM public.products WHERE slug = 'metcopo-steptile-profile-sheet'), 'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=1200&q=80', 'Metcopo Steptile Profile', 1, true),
-    ((SELECT id FROM public.products WHERE slug = 'stone-coated-shake-shingle-tile'), 'https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1200&q=80', 'Stone Coated Shingles', 1, true),
-    ((SELECT id FROM public.products WHERE slug = 'heavy-gauge-ridged-apex-cap'), 'https://images.unsplash.com/photo-1541888946425-d0fbb1861564?auto=format&fit=crop&w=1200&q=80', 'Apex Ridge Cap', 1, true),
-    ((SELECT id FROM public.products WHERE slug = 'on-site-continuous-roll-forming-service'), 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80', 'Roll Forming Rig', 1, true),
-    ((SELECT id FROM public.products WHERE slug = 'custom-cnc-sheet-bending-service'), 'https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?auto=format&fit=crop&w=1200&q=80', 'CNC Sheet Bending', 1, true),
-    ((SELECT id FROM public.products WHERE slug = 'self-drilling-hex-roofing-screws-pack-100'), 'https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?auto=format&fit=crop&w=1200&q=80', 'Roofing Screws', 1, true);
+-- Intentionally omitted. Seed data ships with no photographs so the storefront
+-- falls back to the dimensioned SVG profile cross-section in
+-- components/products/ProfileDiagram.tsx. Stock photography must not stand in
+-- for a specific product's profile, coil, or installation.
+-- Reserved asset paths and licensing state: docs/image-assets.md
 
 -- 6. Sync Inventory
 INSERT INTO public.inventory (product_id, variant_id, quantity, low_stock_threshold)

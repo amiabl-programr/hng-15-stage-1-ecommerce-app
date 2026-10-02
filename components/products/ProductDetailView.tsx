@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Product, ProductVariant } from "@/types/database";
 import { useCartStore } from "@/lib/cart/store";
+import { resolveKind } from "@/lib/products/image-manifest";
+import { ProductImageFrame } from "@/components/products/ProductImageFrame";
 import { formatCurrency } from "@/lib/utils";
 import {
   Star,
@@ -35,41 +37,17 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
     variants.length > 0 ? variants[0] : null
   );
 
-  // Gallery state
-  const images = product.images && product.images.length > 0
-    ? product.images
-    : [
-        {
-          id: "default-1",
-          image_url: "https://images.unsplash.com/photo-1620027814885-f55a1cb8b776?auto=format&fit=crop&w=1200&q=80",
-          alt_text: product.name,
-          display_order: 1,
-          is_primary: true,
-        },
-        {
-          id: "default-2",
-          image_url: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=1200&q=80",
-          alt_text: "Profile Angle View",
-          display_order: 2,
-          is_primary: false,
-        },
-        {
-          id: "default-3",
-          image_url: "https://images.unsplash.com/photo-1541888946425-d0fbb1861564?auto=format&fit=crop&w=1200&q=80",
-          alt_text: "Installation On Site",
-          display_order: 3,
-          is_primary: false,
-        },
-        {
-          id: "default-4",
-          image_url: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80",
-          alt_text: "Coil Detail",
-          display_order: 4,
-          is_primary: false,
-        },
-      ];
+  // Gallery state. With no photographs uploaded, the single profile
+  // cross-section stands in rather than unrelated stock imagery.
+  const images = useMemo(
+    () => (product.images ?? []).slice().sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || a.display_order - b.display_order),
+    [product.images]
+  );
+  const hasGallery = images.length > 1;
+  const { label: profileLabel } = resolveKind(product.slug);
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const activeImage = images[activeImageIndex] ?? null;
 
   // Custom sheet cut-to-length state
   const isDimensioned = product.product_type === "dimensioned";
@@ -114,7 +92,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
         ? { special_instructions: specialInstructions }
         : undefined,
       quantity,
-      imageUrl: images[activeImageIndex]?.image_url,
+      imageUrl: activeImage?.image_url,
     });
 
     if (redirectCheckout) {
@@ -126,10 +104,12 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
   };
 
   const nextImage = () => {
+    if (images.length === 0) return;
     setActiveImageIndex((prev) => (prev + 1) % images.length);
   };
 
   const prevImage = () => {
+    if (images.length === 0) return;
     setActiveImageIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
@@ -141,17 +121,17 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
         <div className="lg:col-span-6 space-y-4">
           {/* Main Large Image */}
           <div className="relative aspect-square w-full bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden shadow-xs flex items-center justify-center p-6">
-            <Image
-              src={images[activeImageIndex]?.image_url}
-              alt={images[activeImageIndex]?.alt_text || product.name}
-              fill
+            <ProductImageFrame
+              slug={product.slug}
+              alt={product.name}
+              image={activeImage}
               priority
               sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-contain object-center rounded-xl transition-all duration-300"
+              imageClassName="object-contain object-center transition-all duration-300"
             />
 
             {/* Gallery Navigation Arrows */}
-            {images.length > 1 && (
+            {hasGallery && (
               <>
                 <button
                   onClick={prevImage}
@@ -172,7 +152,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
           </div>
 
           {/* Thumbnail Carousel Slider */}
-          {images.length > 1 && (
+          {hasGallery && (
             <div className="flex items-center gap-3 overflow-x-auto pb-2">
               {images.map((img, idx) => (
                 <button
@@ -186,7 +166,7 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                 >
                   <Image
                     src={img.image_url}
-                    alt={img.alt_text || `Thumbnail ${idx + 1}`}
+                    alt={img.alt_text || `${product.name}, view ${idx + 1}`}
                     fill
                     sizes="80px"
                     className="object-cover"
@@ -194,6 +174,15 @@ export function ProductDetailView({ product, relatedProducts = [] }: ProductDeta
                 </button>
               ))}
             </div>
+          )}
+
+          {!hasGallery && (
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Photograph of the {profileLabel.toLowerCase()} profile not published yet.{" "}
+              {product.product_type === "service"
+                ? "Ask for a photo of the specific job before you order."
+                : "The drawing above shows the profile cross-section."}
+            </p>
           )}
         </div>
 

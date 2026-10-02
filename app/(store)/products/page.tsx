@@ -1,7 +1,10 @@
 import Link from "next/link";
-import Image from "next/image";
 import { getAllProducts, getCategories } from "@/lib/products/queries";
 import { CatalogViewSwitcher } from "@/components/products/CatalogViewSwitcher";
+import {
+  CategoryImageFrame,
+} from "@/components/products/ProductImageFrame";
+import { ProfileDiagram } from "@/components/products/ProfileDiagram";
 import {
   Search,
   Filter,
@@ -102,12 +105,13 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                   }`}
                 >
                   <div className="relative w-12 h-12 rounded-lg bg-slate-100 overflow-hidden shrink-0">
-                    <Image
-                      src={cat.image_url || "https://images.unsplash.com/photo-1620027814885-f55a1cb8b776?auto=format&fit=crop&w=200&q=80"}
+                    <CategoryImageFrame
+                      slug={cat.slug}
                       alt={cat.name}
-                      fill
+                      url={cat.image_url}
                       sizes="48px"
-                      className="object-cover group-hover:scale-105 transition-transform"
+                      tone="light"
+                      imageClassName="object-cover group-hover:scale-105 transition-transform"
                     />
                   </div>
                   <span className="text-xs font-bold text-slate-800 group-hover:text-blue-600 transition-colors line-clamp-1">
@@ -311,23 +315,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="relative aspect-square rounded-xl overflow-hidden shadow-sm">
-                <Image
-                  src="https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=600&q=80"
-                  alt="Metcopo Installation"
-                  fill
-                  sizes="300px"
-                  className="object-cover"
-                />
+              <div className="relative aspect-square rounded-xl overflow-hidden shadow-sm border border-slate-200">
+                <ProfileDiagram kind="metcoppo" tone="light" />
               </div>
-              <div className="relative aspect-square rounded-xl overflow-hidden shadow-sm">
-                <Image
-                  src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80"
-                  alt="Roll Forming Precision"
-                  fill
-                  sizes="300px"
-                  className="object-cover"
-                />
+              <div className="relative aspect-square rounded-xl overflow-hidden shadow-sm border border-slate-200">
+                <ProfileDiagram kind="roll-forming" tone="light" />
               </div>
             </div>
           </div>

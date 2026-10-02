@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import { ProfileDiagram } from "@/components/products/ProfileDiagram";
 import { ChevronDown, ChevronUp, Lightbulb } from "lucide-react";
 
 export function AboutTabsAndAccordion() {
@@ -71,48 +71,25 @@ export function AboutTabsAndAccordion() {
         </div>
       </div>
 
-      {/* 2. Four-Image Collage (Matching Image 3 Middle Grid) */}
+      {/* Profile collage. These slots used to be stock photographs captioned as the
+          business's own rig, installation crew, press, and finished roofs. */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
         {/* Left tall card */}
         <div className="relative aspect-[3/4] md:aspect-auto md:row-span-2 rounded-2xl overflow-hidden shadow-xs border border-slate-200">
-          <Image
-            src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80"
-            alt="Engineer operating roll forming rig"
-            fill
-            sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover"
-          />
+          <ProfileDiagram kind="roll-forming" tone="light" />
         </div>
 
         {/* Top right card */}
         <div className="relative aspect-[16/10] md:col-span-2 rounded-2xl overflow-hidden shadow-xs border border-slate-200">
-          <Image
-            src="https://images.unsplash.com/photo-1541888946425-d0fbb1861564?auto=format&fit=crop&w=1000&q=80"
-            alt="Commercial roof installation"
-            fill
-            sizes="(max-width: 768px) 100vw, 66vw"
-            className="object-cover"
-          />
+          <ProfileDiagram kind="longspan" tone="light" />
         </div>
 
         {/* Bottom right split 2 cards */}
         <div className="relative aspect-square rounded-2xl overflow-hidden shadow-xs border border-slate-200">
-          <Image
-            src="https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80"
-            alt="CNC press metal folding"
-            fill
-            sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover"
-          />
+          <ProfileDiagram kind="metcoppo" tone="light" />
         </div>
         <div className="relative aspect-square rounded-2xl overflow-hidden shadow-xs border border-slate-200">
-          <Image
-            src="https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=600&q=80"
-            alt="Finished architectural roof"
-            fill
-            sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover"
-          />
+          <ProfileDiagram kind="ridge" tone="light" />
         </div>
       </div>
 

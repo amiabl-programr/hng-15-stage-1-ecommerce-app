@@ -1,6 +1,6 @@
 import { FabricationForm } from "@/components/fabrication/FabricationForm";
+import { ProfileDiagram } from "@/components/products/ProfileDiagram";
 import { Wrench, CheckCircle2, Shield, Cog, Truck } from "lucide-react";
-import Image from "next/image";
 
 export const metadata = {
   title: "On-Site Roll Forming & Sheet Fabrication Services | Roofing Construction Shop",
@@ -99,12 +99,7 @@ export default function FabricationPage() {
           </div>
 
           <div className="relative aspect-video rounded-2xl overflow-hidden border border-slate-800 shadow-xl">
-            <Image
-              src="https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?auto=format&fit=crop&w=800&q=80"
-              alt="Sheet Metal Bending"
-              fill
-              className="object-cover"
-            />
+            <ProfileDiagram kind="bending" tone="dark" />
           </div>
         </div>
       </div>

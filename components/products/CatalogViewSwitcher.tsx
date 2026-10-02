@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { Product } from "@/types/database";
 import { ProductCard } from "@/components/products/ProductCard";
+import { ProductImageFrame } from "@/components/products/ProductImageFrame";
+import { pickPrimaryImage } from "@/lib/products/image-manifest";
 import { formatCurrency } from "@/lib/utils";
 import { useCartStore } from "@/lib/cart/store";
 import {
@@ -36,10 +37,7 @@ export function CatalogViewSwitcher({ products, totalCount }: CatalogViewSwitche
       primaryVariant?.price_override != null
         ? Number(primaryVariant.price_override)
         : Number(product.base_price);
-    const primaryImage =
-      product.images?.find((img) => img.is_primary)?.image_url ||
-      product.images?.[0]?.image_url ||
-      "https://images.unsplash.com/photo-1620027814885-f55a1cb8b776?auto=format&fit=crop&w=800&q=80";
+    const primaryImage = pickPrimaryImage(product.images);
 
     addItem({
       productId: product.id,
@@ -53,7 +51,7 @@ export function CatalogViewSwitcher({ products, totalCount }: CatalogViewSwitche
       variantName: primaryVariant?.name,
       variantAttributes: primaryVariant?.attributes,
       quantity: 1, // Only 1 item for items that can be bought individually
-      imageUrl: primaryImage,
+      imageUrl: primaryImage?.image_url,
     });
 
     setAddedProductId(product.id);
@@ -140,10 +138,7 @@ export function CatalogViewSwitcher({ products, totalCount }: CatalogViewSwitche
         /* List View (Matching Reference Image 2) */
         <div className="space-y-4">
           {sortedProducts.map((product, idx) => {
-            const primaryImage =
-              product.images?.find((img) => img.is_primary)?.image_url ||
-              product.images?.[0]?.image_url ||
-              "https://images.unsplash.com/photo-1620027814885-f55a1cb8b776?auto=format&fit=crop&w=800&q=80";
+            const primaryImage = pickPrimaryImage(product.images);
 
             return (
               <div
@@ -152,12 +147,12 @@ export function CatalogViewSwitcher({ products, totalCount }: CatalogViewSwitche
               >
                 {/* Product Thumbnail */}
                 <div className="relative aspect-square w-40 sm:w-48 bg-slate-50 rounded-lg overflow-hidden shrink-0 flex items-center justify-center p-3 border border-slate-100">
-                  <Image
-                    src={primaryImage}
+                  <ProductImageFrame
+                    slug={product.slug}
                     alt={product.name}
-                    fill
+                    image={primaryImage}
                     sizes="(max-width: 640px) 100vw, 200px"
-                    className="object-cover rounded-md group-hover:scale-105 transition-transform duration-300"
+                    imageClassName="object-cover rounded-md group-hover:scale-105 transition-transform duration-300"
                   />
                   {idx === 1 && (
                     <span className="absolute top-2 left-2 bg-red-500 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded uppercase">

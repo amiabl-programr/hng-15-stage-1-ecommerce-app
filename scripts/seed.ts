@@ -1,6 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 import * as dotenv from "dotenv";
 import * as path from "path";
+import { getManifestEntry } from "../lib/products/image-manifest";
+
+function manifestAlt(slug: string): string | undefined {
+  return getManifestEntry(slug).assets.find((a) => a.role === "main")?.alt;
+}
 
 // Load environment configuration from .env or .env.local
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
@@ -30,7 +35,7 @@ interface SeedCategory {
   name: string;
   slug: string;
   description: string;
-  image_url: string;
+  image_url: string | null;
   display_order: number;
 }
 
@@ -46,7 +51,12 @@ interface SeedProduct {
   min_order_quantity: number;
   is_featured: boolean;
   specifications: Record<string, unknown>;
-  imageUrl: string;
+  /**
+   * Optional. Seed data ships without photographs so the storefront falls back
+   * to the profile cross-section in components/products/ProfileDiagram.tsx
+   * rather than presenting unrelated stock imagery as this product.
+   */
+  imageUrl?: string;
   variants?: Array<{
     name: string;
     sku: string;
@@ -61,77 +71,77 @@ const SEED_CATEGORIES: SeedCategory[] = [
     name: "Roofing Sheets",
     slug: "roofing-sheets",
     description: "Industrial & residential longspan aluminium sheets available in custom lengths.",
-    image_url: "https://images.unsplash.com/photo-1620027814885-f55a1cb8b776?auto=format&fit=crop&w=800&q=80",
+    image_url: null,
     display_order: 1,
   },
   {
     name: "Metcopo Roofing",
     slug: "metcopo-roofing",
     description: "Classic European clay tile aesthetics engineered in high-tensile aluzinc steel.",
-    image_url: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=800&q=80",
+    image_url: null,
     display_order: 2,
   },
   {
     name: "Step Tiles",
     slug: "step-tiles",
     description: "Stepped architectural panels with anti-fade exterior resin finishes.",
-    image_url: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+    image_url: null,
     display_order: 3,
   },
   {
     name: "Roofing Shingles",
     slug: "shingles",
     description: "Multi-layered volcanic basalt stone-coated asphalt tiles for luxury roofs.",
-    image_url: "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80",
+    image_url: null,
     display_order: 4,
   },
   {
     name: "Ridge Caps & Apex",
     slug: "ridge-caps",
     description: "Heavy gauge apex caps to seal junctions against driving rainfall.",
-    image_url: "https://images.unsplash.com/photo-1541888946425-d0fbb1861564?auto=format&fit=crop&w=800&q=80",
+    image_url: null,
     display_order: 5,
   },
   {
     name: "Trimmers & Gutters",
     slug: "trimmers-and-parapets",
     description: "Valley gutters, flashing trimmers, and parapet perimeter wall copings.",
-    image_url: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80",
+    image_url: null,
     display_order: 6,
   },
   {
     name: "Parapets & Flashing",
     slug: "parapets",
     description: "Double drip edge architectural wall cappings for firewall perimeters.",
-    image_url: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=800&q=80",
+    image_url: null,
     display_order: 7,
   },
   {
     name: "Corrugated Sheets",
     slug: "corrugated-sheets",
     description: "Traditional heavy-gauge sinusoidal steel sheets for industrial structures.",
-    image_url: "https://images.unsplash.com/photo-1533750349088-cd871a92f312?auto=format&fit=crop&w=800&q=80",
+    image_url: null,
     display_order: 8,
   },
   {
     name: "Roll Forming Services",
     slug: "roll-forming",
     description: "Computerized on-site continuous roll forming rigs up to 30 metres unbroken.",
-    image_url: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80",
+    image_url: null,
     display_order: 9,
   },
   {
     name: "Bending & Fabrication",
     slug: "bending-services",
     description: "CNC press brake metal folding, arch curving, and bespoke trims.",
-    image_url: "https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?auto=format&fit=crop&w=800&q=80",
+    image_url: null,
     display_order: 10,
   },
   {
     name: "Accessories & Fasteners",
     slug: "accessories",
     description: "EPDM self-drilling hex fasteners, butyl waterproof tapes, and sealants.",
-    image_url: "https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?auto=format&fit=crop&w=800&q=80",
+    image_url: null,
     display_order: 11,
   },
 ];
@@ -149,7 +159,6 @@ const SEED_PRODUCTS: SeedProduct[] = [
     unit: "metre",
     min_order_quantity: 1,
     is_featured: true,
-    imageUrl: "https://images.unsplash.com/photo-1620027814885-f55a1cb8b776?auto=format&fit=crop&w=1200&q=80",
     specifications: {
       material: "Aluminium Alloy 3003",
       effective_width: "900mm",
@@ -199,7 +208,6 @@ const SEED_PRODUCTS: SeedProduct[] = [
     unit: "metre",
     min_order_quantity: 1,
     is_featured: true,
-    imageUrl: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=1200&q=80",
     specifications: {
       material: "Aluzinc Steel",
       effective_width: "1000mm",
@@ -235,7 +243,6 @@ const SEED_PRODUCTS: SeedProduct[] = [
     unit: "piece",
     min_order_quantity: 1,
     is_featured: true,
-    imageUrl: "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1200&q=80",
     specifications: {
       material: "Galvalume Steel + Basalt Granules",
       length: "1340mm",
@@ -270,7 +277,6 @@ const SEED_PRODUCTS: SeedProduct[] = [
     unit: "piece",
     min_order_quantity: 1,
     is_featured: false,
-    imageUrl: "https://images.unsplash.com/photo-1541888946425-d0fbb1861564?auto=format&fit=crop&w=1200&q=80",
     specifications: { material: "Aluminium / Aluzinc", length: "2000mm", girth: "450mm" },
   },
   {
@@ -284,7 +290,6 @@ const SEED_PRODUCTS: SeedProduct[] = [
     unit: "service",
     min_order_quantity: 1,
     is_featured: true,
-    imageUrl: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80",
     specifications: {
       crew_size: "4 Engineers",
       rig_type: "Computerized Hydraulic",
@@ -302,7 +307,6 @@ const SEED_PRODUCTS: SeedProduct[] = [
     unit: "metre",
     min_order_quantity: 1,
     is_featured: true,
-    imageUrl: "https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?auto=format&fit=crop&w=1200&q=80",
     specifications: {
       max_thickness: "1.2mm",
       bending_accuracy: "+/- 0.5 degrees",
@@ -320,7 +324,6 @@ const SEED_PRODUCTS: SeedProduct[] = [
     unit: "bundle",
     min_order_quantity: 1,
     is_featured: false,
-    imageUrl: "https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?auto=format&fit=crop&w=1200&q=80",
     specifications: {
       count: 100,
       size: "12 x 55mm",
@@ -388,16 +391,18 @@ export async function seed() {
 
     const productId = insertedProduct.id;
 
-    await supabase.from("product_images").upsert(
-      {
-        product_id: productId,
-        image_url: p.imageUrl,
-        alt_text: p.name,
-        display_order: 1,
-        is_primary: true,
-      },
-      { onConflict: "product_id,display_order" }
-    );
+    if (p.imageUrl) {
+      await supabase.from("product_images").upsert(
+        {
+          product_id: productId,
+          image_url: p.imageUrl,
+          alt_text: manifestAlt(p.slug) ?? p.name,
+          display_order: 1,
+          is_primary: true,
+        },
+        { onConflict: "product_id,display_order" }
+      );
+    }
 
     if (p.variants && p.variants.length > 0) {
       for (const v of p.variants) {

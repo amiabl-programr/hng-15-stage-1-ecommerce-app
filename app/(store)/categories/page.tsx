@@ -1,6 +1,6 @@
 import Link from "next/link";
-import Image from "next/image";
 import { getCategories } from "@/lib/products/queries";
+import { CategoryImageFrame } from "@/components/products/ProductImageFrame";
 import { ArrowRight, Layers } from "lucide-react";
 
 export const metadata = {
@@ -35,15 +35,11 @@ export default async function CategoriesPage() {
             className="group bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden hover:border-amber-500/50 transition-all duration-300 flex flex-col hover:shadow-xl hover:shadow-amber-500/5"
           >
             <div className="relative aspect-[16/10] w-full bg-slate-950 overflow-hidden">
-              <Image
-                src={
-                  category.image_url ||
-                  "https://images.unsplash.com/photo-1620027814885-f55a1cb8b776?auto=format&fit=crop&w=800&q=80"
-                }
+              <CategoryImageFrame
+                slug={category.slug}
                 alt={category.name}
-                fill
-                sizes="(max-width: 768px) 100vw, 33vw"
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                url={category.image_url}
+                imageClassName="object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent opacity-75" />
             </div>

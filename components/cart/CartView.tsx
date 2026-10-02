@@ -3,7 +3,7 @@
 import { useCartStore } from "@/lib/cart/store";
 import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
-import Image from "next/image";
+import { ProductImageFrame } from "@/components/products/ProductImageFrame";
 import { Trash2, Plus, Minus, ArrowRight, ShoppingCart, ArrowLeft, Ruler } from "lucide-react";
 
 export function CartView() {
@@ -75,14 +75,12 @@ export function CartView() {
               {/* Product Info & Thumbnail */}
               <div className="flex items-start gap-4 flex-1">
                 <div className="relative w-16 h-16 rounded-lg bg-slate-950 border border-slate-800 overflow-hidden shrink-0">
-                  <Image
-                    src={
-                      item.imageUrl ||
-                      "https://images.unsplash.com/photo-1620027814885-f55a1cb8b776?auto=format&fit=crop&w=200&q=80"
-                    }
+                  <ProductImageFrame
+                    slug={item.productSlug}
                     alt={item.productName}
-                    fill
-                    className="object-cover"
+                    image={item.imageUrl ? { image_url: item.imageUrl } : null}
+                    tone="dark"
+                    imageClassName="object-cover"
                   />
                 </div>
 
